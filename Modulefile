@@ -1,5 +1,5 @@
 name    'onyxpoint-gpasswd'
-version '0.1.1'
+version '0.1.2'
 source 'https://github.com/onyxpoint/puppet-gpasswd'
 author 'Trevor Vaughan <tvaughan@onyxpoint.com>'
 license 'Apache License, Version 2.0'

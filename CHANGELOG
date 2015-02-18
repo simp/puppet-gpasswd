@@ -1,0 +1,10 @@
+## onyxpoint-gpasswd changelog
+
+Release notes for onyxpoint-gpasswd
+-----------------------------------
+
+#### 0.0.2 - Tue 17 Feb 2015
+
+* Fixed a bug that was causing issues when running 'puppet resource group'. <tvaughan@onyxpoint.com>
+
+-----------------------------------
