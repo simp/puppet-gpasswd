@@ -46,7 +46,8 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   def members
     retval = @objectinfo.mem
 
-    if ( @resource[:attribute_membership] == :minimum ) and
+    if @resource[:members] and
+       ( @resource[:attribute_membership] == :minimum ) and
        (@resource[:members] - @objectinfo.mem).empty?
     then
         retval = @resource[:members]
