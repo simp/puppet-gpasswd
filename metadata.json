@@ -1,0 +1,14 @@
+{
+  "name": "onyxpoint-gpasswd",
+  "version": "0.1.2",
+  "author": "Trevor Vaughan <tvaughan@onyxpoint.com>",
+  "summary": "Adds support for :manages_members to the Linux group native type",
+  "license": "Apache License, Version 2.0",
+  "source": "https://github.com/onyxpoint/puppet-gpasswd",
+  "project_page": "https://github.com/onyxpoint/puppet-gpasswd",
+  "issues_url": "https://github.com/onyxpoint/puppet-gpasswd/issues",
+  "description": "The Linux group native type cannot manage local group membership. This remedies the situation by providing the :manages_members attribute and using gpasswd for group modification.",
+  "dependencies": [
+  
+  ]
+}
