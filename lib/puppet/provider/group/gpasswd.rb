@@ -45,6 +45,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   end
 
   def members
+    getinfo(true) if @objectinfo.nil?
     retval = @objectinfo.mem
 
     if @resource[:members] and
