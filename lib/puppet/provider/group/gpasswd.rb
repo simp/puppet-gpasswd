@@ -12,6 +12,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
             :delmember => 'gpasswd'
 
   has_feature :manages_members unless %w{HP-UX Solaris}.include? Facter.value(:operatingsystem)
+  has_feature :libuser if Puppet.features.libuser?
 
   def addcmd
     # This pulls in the main group add command should the group need
@@ -44,6 +45,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   end
 
   def members
+    getinfo(true) if @objectinfo.nil?
     retval = @objectinfo.mem
 
     if @resource[:members] and
@@ -93,7 +95,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   def mod_group(cmds)
     cmds.each do |run_cmd|
       begin
-        execute(run_cmd)
+        execute(run_cmd,:custom_environment => @custom_environment)
       rescue Puppet::ExecutionFailure => e
         if $?.exitstatus == 3 then
           Puppet.warning("Modifying #{@resource[:name]} => #{e}")
