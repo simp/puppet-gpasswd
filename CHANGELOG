@@ -1,10 +1,5 @@
-## onyxpoint-gpasswd changelog
+* Thu Feb 12 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.0-1
+- Migrated to the simp environment
 
-Release notes for onyxpoint-gpasswd
------------------------------------
-
-#### 0.0.2 - Tue 17 Feb 2015
-
-* Fixed a bug that was causing issues when running 'puppet resource group'. <tvaughan@onyxpoint.com>
-
------------------------------------
+* Wed Apr 23 2014 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.0-0
+- First RPM build
