@@ -152,12 +152,3 @@ Dir.glob("#{RSpec.configuration.module_path}/*").each do |dir|
     fail "ERROR: The module '#{dir}' is not installed. Tests cannot continue."
   end
 end
-
-Dir.glob("#{RSpec.configuration.module_path}/*").each do |dir|
-  begin
-    Pathname.new(dir).realpath
-  rescue
-    fail "ERROR: The module '#{dir}' is not installed. Tests cannot continue."
-  end
-end
-
