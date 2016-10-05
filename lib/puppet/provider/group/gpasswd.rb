@@ -21,7 +21,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
     @resource[:members] and cmd += @resource[:members].map{ |x|
       [ command(:addmember),'-a',x,@resource[:name] ].shelljoin
     }
-    
+
     mod_group(cmd)
 
     # We're returning /bin/true here since the Nameservice classes
@@ -52,7 +52,11 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
         retval = @resource[:members]
     end
 
-    retval
+    Array(retval).sort
+  end
+
+  def members_insync?(current, should)
+    Array(current).sort == Array(should).sort
   end
 
   def members=(members)

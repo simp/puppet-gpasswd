@@ -1,4 +1,4 @@
 ---
 fixtures:
   symlinks:
-    gpasswd: "#{source_dir}"
+    gpasswd: "#{source_dir}/spec/fixtures/stub_module"
