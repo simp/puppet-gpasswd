@@ -24,17 +24,16 @@ env:
     - STRICT_VARIABLES=yes
     - TRUSTED_NODE_DATA=yes
   matrix:
+    - PUPPET_VERSION="~> 4.9.4"
+    - PUPPET_VERSION="~> 4.8.2"
     - PUPPET_VERSION="~> 4.7.0"
     - PUPPET_VERSION="~> 4.5.0"
-    - PUPPET_VERSION="~> 3.8.0"
     - PUPPET_VERSION="~> 4.4.0"
-    - PUPPET_VERSION="~> 4.3.0"
-    - PUPPET_VERSION="~> 3.8.0" FUTURE_PARSER=yes
 matrix:
   fast_finish: true
   allow_failures:
+    - env: PUPPET_VERSION="~> 4.9.4"
+    - env: PUPPET_VERSION="~> 4.7.0"
     - env: PUPPET_VERSION="~> 4.5.0"
-    - env: PUPPET_VERSION="~> 3.8.0"
     - env: PUPPET_VERSION="~> 4.4.0"
     - env: PUPPET_VERSION="~> 4.3.0"
-    - env: PUPPET_VERSION="~> 3.8.0" FUTURE_PARSER=yes

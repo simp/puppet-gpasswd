@@ -1,4 +1,10 @@
-* Thu Feb 12 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.0-1
+* Fri Feb 17 2017 Liz Nemsick <lnemsick.simp@gmail.com> - 1.0.1-0
+- Fixed Gemfile
+
+* Fri Jul 29 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.0-0
+- Validate compliance_markup mapping
+
+* Thu Feb 12 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.0-0
 - Migrated to the simp environment
 
 * Wed Apr 23 2014 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.0-0

@@ -1,6 +1,6 @@
 {
   "name": "onyxpoint-gpasswd",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Trevor Vaughan <tvaughan@onyxpoint.com>",
   "summary": "Adds support for :manages_members to the Linux group native type",
   "license": "Apache-2.0",
