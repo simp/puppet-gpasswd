@@ -1,4 +1,6 @@
 ---
 fixtures:
+  repositories:
+    stdlib: http://github.com/puppetlabs/puppetlabs-stdlib
   symlinks:
     gpasswd: "#{source_dir}"

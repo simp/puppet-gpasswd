@@ -12,16 +12,19 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
             :delmember => 'gpasswd'
 
   has_feature :manages_members unless %w{HP-UX Solaris}.include? Facter.value(:operatingsystem)
+  has_feature :libuser if Puppet.features.libuser?
 
   def addcmd
     # This pulls in the main group add command should the group need
     # to be added from scratch.
     cmd = Array(super.map{|x| x = "#{x}"}.shelljoin)
 
-    @resource[:members] and cmd += @resource[:members].map{ |x|
-      [ command(:addmember),'-a',x,@resource[:name] ].shelljoin
-    }
-    
+    if @resource[:members]
+      cmd += @resource[:members].map{ |x|
+        [ command(:addmember),'-a',x,@resource[:name] ].shelljoin
+      }
+    end
+
     mod_group(cmd)
 
     # We're returning /bin/true here since the Nameservice classes
@@ -35,7 +38,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   def modifycmd(param, value)
     cmd = [command(param.to_s =~ /password_.+_age/ ? :password : :modify)]
     cmd << flag(param) << value
-    if @resource.allowdupe? and (param == :gid)
+    if @resource.allowdupe? && (param == :gid)
       cmd << "-o"
     end
     cmd << @resource[:name]
@@ -44,33 +47,35 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   end
 
   def members
+    getinfo(true) if @objectinfo.nil?
     retval = @objectinfo.mem
 
-    if ( @resource[:attribute_membership] == :minimum ) and
-       (@resource[:members] - @objectinfo.mem).empty?
-    then
-        retval = @resource[:members]
+    if !@resource[:auth_membership] && (@resource[:members] - @objectinfo.mem).empty?
+      retval = @resource[:members]
     end
 
-    retval
+    retval.sort
+  end
+
+  def members_insync?(is, should)
+    Array(is).uniq.sort == Array(should).uniq.sort
   end
 
   def members=(members)
     cmd = []
     to_be_added = members.dup
-    if @resource[:attribute_membership] == :minimum
-      to_be_added = to_be_added | @objectinfo.mem
-    else
+    if @resource[:auth_membership]
       to_be_removed = @objectinfo.mem - to_be_added
       to_be_added = to_be_added - @objectinfo.mem
 
-      not to_be_removed.empty? and cmd += to_be_removed.map { |x|
+      !to_be_removed.empty? && cmd += to_be_removed.map { |x|
         [ command(:addmember),'-d',x,@resource[:name] ].shelljoin
       }
-
+    else
+      to_be_added = to_be_added | @objectinfo.mem
     end
 
-    not to_be_added.empty? and cmd += to_be_added.map { |x|
+    !to_be_added.empty? && cmd += to_be_added.map { |x|
       [ command(:addmember),'-a',x,@resource[:name] ].shelljoin
     }
 
@@ -92,7 +97,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   def mod_group(cmds)
     cmds.each do |run_cmd|
       begin
-        execute(run_cmd)
+        execute(run_cmd, :custom_environment => @custom_environment)
       rescue Puppet::ExecutionFailure => e
         if $?.exitstatus == 3 then
           Puppet.warning("Modifying #{@resource[:name]} => #{e}")

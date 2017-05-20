@@ -1,13 +1,12 @@
 puppet-gpasswd
 ==============
 
-Puppet-driven local group modification capabilities for Linux systems
-gpasswd
+Puppet-driven local group modification capabilities for Linux `gpasswd`
 
 This is a module that enhances the native group type on systems
-supporting gpasswd to allow for the manipulation of group memebers.
+supporting `gpasswd` to allow for the manipulation of group members.
 
-Specifically, it adds the :manages_members attribute to the native
+Specifically, it adds the `:manages_members` attribute to the native
 Puppet group type. No alterations to your group code are required!
 
 Examples
