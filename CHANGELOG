@@ -1,3 +1,13 @@
+* Sun May 21 2017 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.2-0
+  - Fixed README typos
+  - Cleaned up code
+  - Added acceptance tests
+  - Added support for `auth_membership`
+  - Fixed code regression from d49cf32
+    - Thanks for the notification from John Warburton
+  - Validated noop message was correct
+  - Fixed sort order when checking user lists against the system
+
 * Fri Feb 17 2017 Liz Nemsick <lnemsick.simp@gmail.com> - 1.0.1-0
 - Fixed Gemfile
 

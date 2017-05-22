@@ -35,6 +35,7 @@ group :development do
 end
 
 group :system_tests do
+  gem 'beaker', :git => 'https://github.com/onyxpoint/beaker.git', :branch => 'fix_sles'
   gem 'beaker-rspec'
   gem 'simp-beaker-helpers', ENV.fetch('SIMP_BEAKER_HELPERS_VERSION', '~> 1.5')
 end

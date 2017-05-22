@@ -10,11 +10,20 @@ Specifically, it adds the `:manages_members` attribute to the native
 Puppet group type. No alterations to your group code are required!
 
 Examples
-========
+--------
 
+```ruby
 group { 'test':
   members => ['foo','bar','baz']
 }
+```
+
+NOTES
+-----
+
+The metadata for this module will only reflect OS releases that have either
+been tested by the [Beaker](https://github.com/puppetlabs/beaker) acceptance
+tests or submitted via an issue.
 
 License
 -------
