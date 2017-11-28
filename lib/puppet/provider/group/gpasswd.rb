@@ -13,6 +13,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
 
   has_feature :manages_members unless %w{HP-UX Solaris}.include? Facter.value(:operatingsystem)
   has_feature :libuser if Puppet.features.libuser?
+  has_feature :system_groups unless %w{HP-UX Solaris}.include? Facter.value(:operatingsystem)
 
   def addcmd
     # This pulls in the main group add command should the group need
