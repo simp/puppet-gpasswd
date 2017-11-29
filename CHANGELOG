@@ -1,3 +1,11 @@
+* Tue Nov 28 2017 Nick Markowski <nicholas.markowski@onyxpoint.com> - 1.0.4-0
+- 1.0.3 was tagged, bumping to 1.0.4
+- Fix addresses https://github.com/onyxpoint/puppet-gpasswd/issues/7
+- Before this fix, users could not specify groups in the system
+  GID range, SYS_GID_[MAX,MIN] in /etc/login.defs. Added system_groups
+  feature to gpasswd.
+- Added beaker tests to ensure groups can be created within the system range.
+
 * Sun May 21 2017 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.2-0
   - Fixed README typos
   - Cleaned up code
