@@ -25,4 +25,5 @@ HOSTS:
           - https://getfedora.org/static/352C64E5.txt
 CONFIG:
   log_level: verbose
+  puppet_collection: puppet5
   type: aio

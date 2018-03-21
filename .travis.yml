@@ -1,31 +1,85 @@
-#  PE/SIMP versions
-#  app    pup  ruby
-# 2015.2  4.3  2.1.7
-# 2015.3  4.3  2.1.8
-# 2016.1  4.4  2.1.9
-# 2016.2  4.5  2.1.9
-# S6.0.0  4.7  2.1.9
+# The testing matrix considers ruby/puppet versions supported by SIMP and PE:
+# ------------------------------------------------------------------------------
+#  release    pup   ruby      eol
+# PE 2016.4   4.7   2.1.9  TBD (LTS)
+# PE 2016.5   4.8   2.1.9  2017-10-31
+# SIMP6.0.0   4.8   2.1.9  TBD
+# PE 2017.1   4.9   2.1.9  2017-10-31
+# PE 2017.2   4.10  2.1.9  TBD
 ---
 language: ruby
-sudo: false
 cache: bundler
-before_script:
-  - bundle
-bundler_args: --without development system_tests
-before_install: rm Gemfile.lock || true
-script:
-  - bundle exec rake test
+sudo: false
+
+bundler_args: --without development system_tests --path .vendor
+
 notifications:
   email: false
-rvm:
-  - 2.1.9
-env:
-  global:
-    - STRICT_VARIABLES=yes
-    - TRUSTED_NODE_DATA=yes
-  matrix:
-    - PUPPET_VERSION="~> 4.10.1"
-    - PUPPET_VERSION="~> 4.8.2"
-    - PUPPET_VERSION="~> 4.7.1"
-matrix:
-  fast_finish: true
+
+addons:
+  apt:
+    packages:
+      - rpm
+
+before_install:
+  - rm -f Gemfile.lock
+
+jobs:
+  include:
+    - stage: check
+      rvm: 2.4.1
+      env: STRICT_VARIABLES=yes TRUSTED_NODE_DATA=yes PUPPET_VERSION="~> 5"
+      script:
+        - bundle exec rake check:dot_underscore
+        - bundle exec rake check:test_file
+        - bundle exec rake pkg:check_version
+        - bundle exec rake metadata_lint
+        - bundle exec rake pkg:compare_latest_tag
+        - bundle exec rake pkg:create_tag_changelog
+        - bundle exec rake lint
+        - bundle exec puppet module build
+
+    - stage: spec
+      rvm: 2.4.1
+      env: STRICT_VARIABLES=yes TRUSTED_NODE_DATA=yes PUPPET_VERSION="~> 5.0"
+      script:
+        - bundle exec rake spec
+
+    - stage: spec
+      rvm: 2.1.9
+      env: STRICT_VARIABLES=yes TRUSTED_NODE_DATA=yes PUPPET_VERSION="~> 4.10.0"
+      script:
+        - bundle exec rake spec
+
+    - stage: spec
+      rvm: 2.1.9
+      env: STRICT_VARIABLES=yes TRUSTED_NODE_DATA=yes PUPPET_VERSION="~> 4.9.2"
+      script:
+        - bundle exec rake spec
+
+    - stage: spec
+      rvm: 2.1.9
+      env: STRICT_VARIABLES=yes TRUSTED_NODE_DATA=yes PUPPET_VERSION="~> 4.7.0"
+      script:
+        - bundle exec rake spec
+
+    - stage: deploy
+      rvm: 2.4.1
+      script:
+        - true
+      before_deploy:
+        - "export PUPMOD_METADATA_VERSION=`ruby -r json -e \"puts JSON.parse(File.read('metadata.json')).fetch('version')\"`"
+        - '[[ $TRAVIS_TAG =~ ^simp-${PUPMOD_METADATA_VERSION}$|^${PUPMOD_METADATA_VERSION}$ ]]'
+
+      deploy:
+        - provider: releases
+          api_key:
+            secure: "aMcWn5sujliqskJjS99tMKnhmUqohSH2LdssRdi+hpIWz0OUXjAAB6o36CeCoUmIzCrC1tzxBfYsVHKX98RkyWrMd3YPbvhs93XrK1mHIjUtnc+w8KVZRcK+3xxpmKd1Io3fElqYDzktayVRJStxgBRy5G38PEYkTOvqXE5flCt26jf+UFKP2ogAM6LFhGYaKFE69e4stsSC4oMg3JVfZZzkPt3T7/m/Tai2ZTshTY/p95pWwDuDr7DnE0QZPoOfLn4YaXOobXLOfdo6Kn5VFPwghvEF8n+y8vZ/CEUIB2lAA5kvACkUJI34LMyKdmPaRVAlyPeISwjvln7osgcwSxS8wqLMjzwFjVYR+0qWL2SY+bEU4tA/xHTZHj2V3FwsQa8AwDDIl4CMezIKrtY4H5qn8lcCs57fizJRNmAwxv6uXW3dxGAV3Gbdv1VZdVRmJ/2JpN1RmPYEG1SZd8JdYx4rbAcNVP7Vbd1YwjpL5/VvfPF5OB0xbUbe3rjJ7nIFbWKsUS7cwAIY5pTqmer0NW/v6bua1A4HdsjHgzcZT1LsewAJpR6XRVbpvPhV4s0C2QHrgfxSjNSsSj4GDkHKCbTrD3YzRWpIXtlnPLinpNA7ED+EHSIj4BpdSmlx9NaPt9eIlO2n/gYa86Ieob2cpTtzZFwU2qicYF7WeTLEUGQ="
+          skip_cleanup: true
+          on:
+            tags: true
+            condition: '($SKIP_FORGE_PUBLISH != true)'
+        - provider: puppetforge
+          user: simp
+          password:
+            secure: "YLRv3cKwVbZrberLIfHSSwBpPFv54PLgIXpxYnjKLhuc2zOQmLIPq3ywe7Y8/VH7kxnk9r2w/+qktw5cL0ESeh6msyKnfSKwnHL1nuFj0MysgIl1d1EvfGXOubEICjv/iO5vxS8LNDxcQfDeGYYxmXnqQVw/L+/i6nd2oE8AqKs0Az4uBVjIYy71ilX47dwFFVfbLM1R91zcTI8SU3xRDzAwtOg3RmzDTmufDPgrw5ijy2GATjg4dyro/ck2J92L+PMqH+hwkPAITfVQsEIdhT6fh12n1owYv09foLBqGH9daYu5r8qWlIxr8DAzuQZU6UeRd6IkSnIk0xCj1WBK5sQwBwdEAELLBU8bU44mNBNJ4CScIhoMRHZGw+oMeuzOHxKYByBF6P2ifssHfphq2gweZRuFJKyvDgRdh0q5WBzCucJIWRV+9C/AD5udfp1NbVqaH56AP5FC9HrGQpyz/YjwGK0B6edM6xG31FHbP+PKWRvs1Q4Tczg87W77UNRO2cH2W4a0t2EK9zfbxVykl9iz6v5Muk13R9quRbnT2A7osRd6BAqSofsYYFOWQ1nfaoi54wFA+fLBxNCFpxBmWXOUHxQ8RRARYnkaEv8tyyE490y7ikapMhMu0YxDW/q8zKQYykGsdgA+W/daH6hRpP3nz+klidTiizPma3Cav/8="
