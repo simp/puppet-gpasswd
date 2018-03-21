@@ -1,0 +1,240 @@
+# The testing matrix considers ruby/puppet versions supported by SIMP and PE:
+#
+# https://puppet.com/docs/pe/2017.3/overview/component_versions_in_recent_pe_releases.html
+# https://puppet.com/misc/puppet-enterprise-lifecycle
+# https://puppet.com/docs/pe/2017.3/overview/getting_support_for_pe.html#standard-releases-and-long-term-support-releases
+# ------------------------------------------------------------------------------
+#  release    pup   ruby      eol
+# PE 2016.4   4.7   2.1.9  2018-10  (LTS)
+# SIMP6.0.0   4.8   2.1.9  TBD
+# PE 2017.2   4.10  2.1.9  2018-02-21
+# PE 2017.3   5.3   2.4.1  2018-07
+# PE 2018.1   ???   ?????  ????-??  (LTS)
+---
+.cache_bundler: &cache_bundler
+  cache:
+    untracked: true
+    # A broad attempt at caching between runs (ala Travis CI)
+    key: "${CI_PROJECT_NAMESPACE}__bundler"
+    paths:
+      - '.vendor'
+      - 'vendor'
+
+.setup_bundler_env: &setup_bundler_env
+  before_script:
+    - 'echo Files in cache: $(find .vendor | wc -l) || :'
+    - 'export GEM_HOME=.vendor/gem_install'
+    - 'export BUNDLE_CACHE_PATH=.vendor/bundler'
+    - 'declare GEM_BUNDLER_VER=(-v ''~> ${BUNDLER_VERSION:-1.16.0}'')'
+    - declare GEM_INSTALL=(gem install --no-document)
+    - declare BUNDLER_INSTALL=(bundle install --no-binstubs --jobs $(nproc) --path=.vendor "${FLAGS[@]}")
+    - gem list -ie "${GEM_BUNDLE_VER[@]}" --silent bundler || "${GEM_INSTALL[@]}" --local "${GEM_BUNDLE_VER[@]}" bundler || "${GEM_INSTALL[@]}" "${GEM_BUNDLE_VER[@]}" bundler
+    - 'rm -rf pkg/ || :'
+    - bundle check || rm -f Gemfile.lock && ("${BUNDLER_INSTALL[@]}" --local || "${BUNDLER_INSTALL[@]}")
+
+
+.validation_checks: &validation_checks
+  script:
+    - bundle exec rake syntax
+    - bundle exec rake check:dot_underscore
+    - bundle exec rake check:test_file
+    - bundle exec rake pkg:check_version
+    - bundle exec rake pkg:compare_latest_tag
+    - bundle exec rake lint
+    - bundle exec rake clean
+    - bundle exec puppet module build
+
+.spec_tests: &spec_tests
+  script:
+    - bundle exec rake spec
+
+stages:
+  - validation
+  - unit
+  - acceptance
+  - deploy
+
+# Puppet 4.7 for PE 2016.4 LTS Support (EOL: 2018-10-21)
+# See: https://puppet.com/misc/puppet-enterprise-lifecycle
+# --------------------------------------
+pup4_7-validation:
+  stage: validation
+  tags:
+    - docker
+  image: ruby:2.1
+  variables:
+    PUPPET_VERSION: '~> 4.7.0'
+  <<: *cache_bundler
+  <<: *setup_bundler_env
+  <<: *validation_checks
+
+pup4_7-unit:
+  stage: unit
+  tags:
+    - docker
+  image: ruby:2.1
+  variables:
+    PUPPET_VERSION: '~> 4.7.0'
+  <<: *cache_bundler
+  <<: *setup_bundler_env
+  <<: *spec_tests
+
+
+# Puppet 4.8 for SIMP 6.0 + 6.1 support
+# --------------------------------------
+pup4_8-validation:
+  stage: validation
+  tags:
+    - docker
+  image: ruby:2.1
+  variables:
+    PUPPET_VERSION: '~> 4.8.0'
+  <<: *cache_bundler
+  <<: *setup_bundler_env
+  <<: *validation_checks
+
+pup4_8-unit:
+  stage: unit
+  tags:
+    - docker
+  image: ruby:2.1
+  variables:
+    PUPPET_VERSION: '~> 4.8.0'
+  <<: *cache_bundler
+  <<: *setup_bundler_env
+  <<: *spec_tests
+
+
+# Puppet 4.10 for PE 2017.2 support (EOL:2018-02-21)
+# See: https://puppet.com/misc/puppet-enterprise-lifecycle
+# --------------------------------------
+pup4_10-validation:
+  stage: validation
+  tags:
+    - docker
+  image: ruby:2.1
+  variables:
+    PUPPET_VERSION: '~> 4.10.0'
+  <<: *cache_bundler
+  <<: *setup_bundler_env
+  <<: *validation_checks
+
+pup4_10-unit:
+  stage: unit
+  tags:
+    - docker
+  image: ruby:2.1
+  variables:
+    PUPPET_VERSION: '~> 4.10.0'
+  <<: *cache_bundler
+  <<: *setup_bundler_env
+  <<: *spec_tests
+
+
+# Puppet 5.3 for PE 2017.3 support (EOL: 2018-07)
+# See: https://puppet.com/misc/puppet-enterprise-lifecycle
+# --------------------------------------
+pup5_3-validation:
+  stage: validation
+  tags:
+    - docker
+  image: ruby:2.4
+  variables:
+    PUPPET_VERSION: '~> 5.3.0'
+  <<: *cache_bundler
+  <<: *setup_bundler_env
+  <<: *validation_checks
+
+pup5_3-unit:
+  stage: unit
+  tags:
+    - docker
+  image: ruby:2.4
+  variables:
+    PUPPET_VERSION: '~> 5.3.0'
+  <<: *cache_bundler
+  <<: *setup_bundler_env
+  <<: *spec_tests
+
+
+# Keep an eye on the latest puppet 5
+# ----------------------------------
+pup5_latest-validation:
+  stage: validation
+  tags:
+    - docker
+  image: ruby:2.4
+  variables:
+    PUPPET_VERSION: '~> 5.0'
+  <<: *cache_bundler
+  <<: *setup_bundler_env
+  <<: *validation_checks
+
+pup5_latest-unit:
+  stage: unit
+  tags:
+    - docker
+  image: ruby:2.4
+  variables:
+    PUPPET_VERSION: '~> 5.0'
+  <<: *cache_bundler
+  <<: *setup_bundler_env
+  <<: *spec_tests
+
+
+
+# Acceptance tests
+# ==============================================================================
+default-acceptance:
+  stage: acceptance
+  tags:
+    - beaker
+  <<: *cache_bundler
+  <<: *setup_bundler_env
+  variables:
+    PUPPET_VERSION: '4.10'
+  script:
+    - bundle exec rake beaker:suites[default]
+
+fips-acceptance:
+  stage: acceptance
+  tags:
+    - beaker
+  <<: *cache_bundler
+  <<: *setup_bundler_env
+  variables:
+    PUPPET_VERSION: '4.10'
+    BEAKER_fips: 'yes'
+  script:
+    - bundle exec rake beaker:suites[default]
+
+acceptance-puppet5-default:
+  stage: acceptance
+  tags:
+    - beaker
+  <<: *cache_bundler
+  <<: *setup_env_beaker
+  script:
+    - bundle exec rake beaker:suites[default,puppet5]
+
+acceptance-fips-puppet5-default:
+  stage: acceptance
+  tags:
+    - beaker
+  <<: *cache_bundler
+  <<: *setup_env_beaker
+  variables:
+    BEAKER_fips: 'yes'
+  script:
+    - bundle exec rake beaker:suites[default,puppet5]
+
+acceptance-oel-puppet5-default:
+  stage: acceptance
+  tags:
+    - beaker
+  <<: *cache_bundler
+  <<: *setup_env_beaker
+  variables:
+    PUPPET_VERSION: '5.4'
+  script:
+    - bundle exec rake beaker:suites[default,oel_p5]
