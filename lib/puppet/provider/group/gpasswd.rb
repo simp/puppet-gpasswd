@@ -15,6 +15,11 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   has_feature :libuser if Puppet.features.libuser?
   has_feature :system_groups unless %w{HP-UX Solaris}.include? Facter.value(:operatingsystem)
 
+  def is_new_format?
+    defined?(Puppet::Property::List) &&
+      @resource.parameter('members').class.ancestors.include?(Puppet::Property::List)
+  end
+
   def addcmd
     # This pulls in the main group add command should the group need
     # to be added from scratch.
@@ -68,7 +73,12 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
 
     retval = retval.sort
 
-    return retval.join(',')
+    # Puppet 5.5.7 breaking change workaround
+    if is_new_format?
+      return retval.join(',')
+    else
+      return retval
+    end
   end
 
   def members_insync?(is, should)
@@ -77,7 +87,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
 
   def members=(to_set)
     cmd = []
-    if @resource.property('members').should.is_a?(String)
+    if is_new_format?
       to_be_added = to_set.split(',')
     else
       to_be_added = to_set.dup
