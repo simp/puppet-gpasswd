@@ -66,7 +66,13 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
       retval = members_to_set
     end
 
-    return retval.sort.join(',')
+    retval = retval.sort
+
+    if @resource[:members].is_a?(String)
+      return retval.join(',')
+    else
+      return retval
+    end
   end
 
   def members_insync?(is, should)
