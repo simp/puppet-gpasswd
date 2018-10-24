@@ -20,13 +20,13 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
     # to be added from scratch.
     cmd = Array(super.map{|x| x = "#{x}"}.shelljoin)
 
-    if @resource[:members]
-      cmd += @resource[:members].map{ |x|
+    if @resource.parameter('members')
+      cmd += @resource.property('members').shouldorig.map{ |x|
         [ command(:addmember),'-a',x,@resource[:name] ].shelljoin
       }
     end
 
-    mod_group(cmd)
+      mod_group(cmd)
 
     # We're returning /bin/true here since the Nameservice classes
     # would execute whatever is returned here.
@@ -48,32 +48,43 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   end
 
   def members
-    getinfo(true) if @objectinfo.nil?
-    retval = @objectinfo.mem
+    members_to_set = @resource.parameter('members').shouldorig
 
-    if !@resource[:auth_membership] && (@resource[:members] - @objectinfo.mem).empty?
-      retval = @resource[:members]
+    @current_members = []
+    begin
+      current_members = Puppet::Etc.send('getgrnam', name)
+      if current_members
+        @current_members = current_members.mem
+      end
+    rescue ArgumentError
+      # Noop
     end
 
-    retval.sort
+    retval = @current_members
+
+    if !@resource[:auth_membership] && (members_to_set - @current_members).empty?
+      retval = members_to_set
+    end
+
+    return retval.sort
   end
 
   def members_insync?(is, should)
     Array(is).uniq.sort == Array(should).uniq.sort
   end
 
-  def members=(members)
+  def members=(to_set)
     cmd = []
-    to_be_added = members.dup
+    to_be_added = to_set.dup
     if @resource[:auth_membership]
-      to_be_removed = @objectinfo.mem - to_be_added
-      to_be_added = to_be_added - @objectinfo.mem
+      to_be_removed = @current_members - to_be_added
+      to_be_added = to_be_added - @current_members
 
       !to_be_removed.empty? && cmd += to_be_removed.map { |x|
         [ command(:addmember),'-d',x,@resource[:name] ].shelljoin
       }
     else
-      to_be_added = to_be_added | @objectinfo.mem
+      to_be_added = to_be_added | @current_members
     end
 
     !to_be_added.empty? && cmd += to_be_added.map { |x|

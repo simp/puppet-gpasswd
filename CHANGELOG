@@ -1,3 +1,8 @@
+* Wed Oct 24 2018 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.6-0
+- Refactored the module to work with Puppet > 5.5.6
+  - Puppet 5.5.7 broke the Type/Provider interface in the 'group' type so
+    required an emergency refactor
+
 * Tue Mar 20 2018 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.0.5-0
 - Added support for OEL and Puppet 5
 
