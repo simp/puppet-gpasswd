@@ -75,7 +75,12 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
 
   def members=(to_set)
     cmd = []
-    to_be_added = to_set.dup
+    if to_set.is_a?(String)
+      to_be_added = to_set.split(',')
+    else
+      to_be_added = to_set.dup
+    end
+
     if @resource[:auth_membership]
       to_be_removed = @current_members - to_be_added
       to_be_added = to_be_added - @current_members
