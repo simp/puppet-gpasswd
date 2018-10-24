@@ -81,7 +81,7 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
         provider.create
 
         provider.members
-        provider.members=(resource.property('members').shouldorig)
+        provider.members=(resource.property('members').should)
       end
     end
 
@@ -99,7 +99,7 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
         provider.create
 
         provider.members
-        provider.members=(resource.property('members').shouldorig)
+        provider.members=(resource.property('members').should)
       end
     end
 
@@ -121,7 +121,7 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
         provider.create
 
         provider.members
-        provider.members=(resource.property('members').shouldorig)
+        provider.members=(resource.property('members').should)
       end
     end
   end

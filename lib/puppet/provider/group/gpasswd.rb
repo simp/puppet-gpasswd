@@ -68,11 +68,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
 
     retval = retval.sort
 
-    if @resource[:members].is_a?(String)
-      return retval.join(',')
-    else
-      return retval
-    end
+    return retval.join(',')
   end
 
   def members_insync?(is, should)
@@ -81,7 +77,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
 
   def members=(to_set)
     cmd = []
-    if to_set.is_a?(String)
+    if @resource.property('members').should.is_a?(String)
       to_be_added = to_set.split(',')
     else
       to_be_added = to_set.dup
