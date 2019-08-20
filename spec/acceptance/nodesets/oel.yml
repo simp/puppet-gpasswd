@@ -14,22 +14,14 @@ HOSTS:
     platform:   el-6-x86_64
     box:        onyxpoint/oel-6-x86_64
     hypervisor: vagrant
-    yum_repos:
-      epel:
-        mirrorlist: 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch'
-        gpgkeys:
-          - https://getfedora.org/static/0608B895.txt
+
   oel7:
     roles:
       - client
     platform:   el-7-x86_64
     box:        onyxpoint/oel-7-x86_64
     hypervisor: vagrant
-    yum_repos:
-      epel:
-        mirrorlist: 'https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch'
-        gpgkeys:
-          - https://getfedora.org/static/352C64E5.txt
+
 CONFIG:
   log_level: verbose
   type: aio
