@@ -1,3 +1,8 @@
+* Fri Dec 13 2019 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.1.0-0
+- Add EL8 support
+- Fixed a bug where the system would incorrectly attempt to process users even
+  if the user was not known to the underlying system
+
 * Wed May 22 2019 Liz Nemsick <lnemsic.simp@gmail.com.com> - 1.0.7-0
 - Expand the range of Puppet to < 7.0.0
 

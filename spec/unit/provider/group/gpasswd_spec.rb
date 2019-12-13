@@ -18,6 +18,8 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
 
   let(:provider) { described_class.new(:name => 'mygroup') }
   let(:members) { nil }
+  let(:success_output) { Puppet::Util::Execution::ProcessOutput.new('', 0) }
+  let(:failure_output) { Puppet::Util::Execution::ProcessOutput.new('Failure', 1) }
 
   describe "#create" do
     it "should add -o when allowdupe is enabled and the group is being created" do
@@ -28,9 +30,18 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
       # returning the expected string to execute.
       provider.expects(:execute).with('/bin/true',
         :custom_environment => {},
-        :failonfail => true,
-        :combine => true)
-      provider.expects(:execute).with('/usr/sbin/groupadd -g 555 -o mygroup', {:custom_environment => {}})
+        :failonfail         => true,
+        :combine            => true,
+        :sensitive          => false)
+
+      provider.expects(:execute).with(
+        '/usr/sbin/groupadd -g 555 -o mygroup',
+        {
+          :custom_environment => {},
+          :failonfail => false
+        }
+      ).returns(success_output)
+
       provider.create
     end
 
@@ -39,9 +50,17 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
         @resource[:system] = :true
         provider.expects(:execute).with('/bin/true',
           :custom_environment => {},
-          :failonfail => true,
-          :combine => true)
-        provider.expects(:execute).with('/usr/sbin/groupadd -r mygroup', {:custom_environment => {}})
+          :failonfail         => true,
+          :combine            => true,
+          :sensitive          => false)
+
+        provider.expects(:execute).with(
+          '/usr/sbin/groupadd -r mygroup',
+          {
+            :custom_environment => {},
+            :failonfail => false
+          }
+        ).returns(success_output)
         provider.create
       end
     end
@@ -51,9 +70,18 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
         @resource[:system] = :true
         provider.expects(:execute).with('/bin/true',
           :custom_environment => {},
-          :failonfail => true,
-          :combine => true)
-        provider.expects(:execute).with('/usr/sbin/groupadd mygroup', {:custom_environment => {}})
+          :failonfail         => true,
+          :combine            => true,
+          :sensitive          => false)
+
+        provider.expects(:execute).with(
+          '/usr/sbin/groupadd mygroup',
+          {
+            :custom_environment => {},
+            :failonfail => false
+          }
+        ).returns(success_output)
+
         provider.create
       end
     end
@@ -64,11 +92,26 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
       it "should pass all members individually as group add options to gpasswd" do
         provider.expects(:execute).with('/bin/true',
           :custom_environment => {},
-          :failonfail => true,
-          :combine => true)
-        provider.expects(:execute).with('/usr/sbin/groupadd mygroup', {:custom_environment => {}})
+          :failonfail         => true,
+          :combine            => true,
+          :sensitive          => false)
+
+        provider.expects(:execute).with(
+          '/usr/sbin/groupadd mygroup',
+          {
+            :custom_environment => {},
+            :failonfail => false
+          }
+        ).returns(success_output)
+
         members.each do |member|
-          provider.expects(:execute).with("/usr/bin/gpasswd -a #{member} mygroup", {:custom_environment => {}})
+          provider.expects(:execute).with(
+            "/usr/bin/gpasswd -a #{member} mygroup",
+            {
+              :custom_environment => {},
+              :failonfail => false
+            }
+          ).returns(success_output)
         end
 
         provider.create
@@ -84,7 +127,13 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
         )
         @resource[:auth_membership] = :false
         members.each do |member|
-          provider.expects(:execute).with("/usr/bin/gpasswd -a #{member} mygroup", {:custom_environment => {}})
+          provider.expects(:execute).with(
+            "/usr/bin/gpasswd -a #{member} mygroup",
+            {
+              :custom_environment => {},
+              :failonfail => false
+            }
+          ).returns(success_output)
         end
         provider.create
 
@@ -103,7 +152,13 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
         )
         @resource[:auth_membership] = :false
         (members | old_members).each do |member|
-          provider.expects(:execute).with("/usr/bin/gpasswd -a #{member} mygroup", {:custom_environment => {}})
+          provider.expects(:execute).with(
+            "/usr/bin/gpasswd -a #{member} mygroup",
+            {
+              :custom_environment => {},
+              :failonfail => false
+            }
+          ).returns(success_output)
         end
         provider.create
 
@@ -117,17 +172,32 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
 
       it "should add all new members and delete all, non-matching, existing members" do
         old_members = ['old_one','old_two','old_three','test_three']
+
         Etc.stubs(:getgrnam).with('mygroup').returns(
           Struct::Group.new('mygroup','x','99999',old_members)
         )
+
         @resource[:auth_membership] = :true
 
         (members - old_members).each do |to_add|
-          provider.expects(:execute).with("/usr/bin/gpasswd -a #{to_add} mygroup", {:custom_environment => {}})
+          provider.expects(:execute).with(
+            "/usr/bin/gpasswd -a #{to_add} mygroup",
+            {
+              :custom_environment => {},
+              :failonfail => false
+            }
+          ).returns(success_output)
         end
         (old_members - members).each do |to_del|
-          provider.expects(:execute).with("/usr/bin/gpasswd -d #{to_del} mygroup", {:custom_environment => {}})
+          provider.expects(:execute).with(
+            "/usr/bin/gpasswd -d #{to_del} mygroup",
+            {
+              :custom_environment => {},
+              :failonfail => false
+            }
+          ).returns(success_output)
         end
+
         provider.create
 
         provider.members
@@ -140,7 +210,12 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
     it "should add -o when allowdupe is enabled and the gid is being modified" do
       @resource[:allowdupe] = :true
       if Gem::Version.new(Puppet.version) >= Gem::Version.new('5.4.0')
-        provider.expects(:execute).with(['/usr/sbin/groupmod', '-g', 150, '-o', 'mygroup'], {:failonfail => true, :combine => true, :custom_environment => {}})
+        provider.expects(:execute).with(['/usr/sbin/groupmod', '-g', 150, '-o', 'mygroup'], {
+          :combine            => true,
+          :sensitive          => false,
+          :custom_environment => {},
+          :failonfail         => true
+        })
       else
         provider.expects(:execute).with(['/usr/sbin/groupmod', '-g', 150, '-o', 'mygroup'])
       end
