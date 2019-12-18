@@ -82,7 +82,30 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   end
 
   def members_insync?(is, should)
-    Array(is).uniq.sort == Array(should).uniq.sort
+    # We need to remove any user that the system doesn't recognize, otherwise
+    # the add and/or remove commands will fail.
+
+    _should = Array(should).dup.sort.uniq
+
+    _should.delete_if do |user|
+      begin
+        # This is an integer
+        if user.to_i.to_s == user
+          Puppet::Etc.send('getpwuid', user)
+        else
+          Puppet::Etc.send('getpwnam', user)
+        end
+
+        Puppet.debug("Ignoring unknown user: '#{user}'")
+
+        false
+      rescue
+
+        true
+      end
+    end
+
+    Array(is).sort.uniq == _should
   end
 
   def members=(to_set)
@@ -121,20 +144,19 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   # or creating a whole new type just to override an insignificant
   # segment of the native group type.
   #
-  # The run of the type *will* succeed in this case but fail in all
-  # others.
+  # The run of the type *will* succeed in all cases and present warnings to the
+  # user.
   def mod_group(cmds)
     cmds.each do |run_cmd|
       begin
-        execute(run_cmd, :custom_environment => @custom_environment)
-      rescue Puppet::ExecutionFailure => e
-        if $?.exitstatus == 3 then
-          Puppet.warning("Modifying #{@resource[:name]} => #{e}")
+        output = execute(run_cmd, :custom_environment => @custom_environment, :failonfail => false)
+
+        if output.exitstatus != 0
+          Puppet.warning("Error modifying #{@resource[:name]} using '#{run_cmd}': #{output}")
         else
-          raise e
+          Puppet.debug("Success: #{run_cmd}")
         end
       end
-      Puppet.debug("Success: #{run_cmd}")
     end
   end
 end

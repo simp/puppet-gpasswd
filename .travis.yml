@@ -4,11 +4,9 @@
 # https://puppet.com/misc/puppet-enterprise-lifecycle
 # https://puppet.com/docs/pe/2018.1/overview/getting_support_for_pe.html
 # ------------------------------------------------------------------------------
-# Release       Puppet   Ruby   EOL
-# PE 2017.3     5.3      2.4.5  2018-12-31
-# SIMP 6.3      5.5.10   2.4.5  TBD***
-# PE 2018.1     5.5.8    2.4.5  2020-05 (LTS)***
-# PE 2019.0     6.0      2.5.1  2019-08-31^^^
+# Release     Puppet  Ruby   EOL
+# PE 2018.1.7 5.5.16  2.4.5  2020-05 (LTS)***
+# PE 2019.0   6.0     2.5.1  2019-08-31^^^
 #
 # *** = Modules created for SIMP 6.3+ are not required to support Puppet < 5.5
 
@@ -55,13 +53,6 @@ jobs:
         - bundle exec rake pkg:create_tag_changelog
         - bundle exec rake lint
         - bundle exec puppet module build
-
-    - stage: spec
-      name: 'Puppet 5.3 (PE 2017.3)'
-      rvm: 2.4.5
-      env: PUPPET_VERSION="~> 5.3.0"
-      script:
-        - bundle exec rake spec
 
     - stage: spec
       rvm: 2.4.5

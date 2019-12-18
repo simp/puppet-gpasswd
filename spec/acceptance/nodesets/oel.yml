@@ -9,17 +9,18 @@ HOSTS:
   oel6:
     roles:
       - default
-      - master
-      - client
     platform:   el-6-x86_64
     box:        onyxpoint/oel-6-x86_64
     hypervisor: vagrant
 
   oel7:
-    roles:
-      - client
     platform:   el-7-x86_64
     box:        onyxpoint/oel-7-x86_64
+    hypervisor: vagrant
+
+  oel8:
+    platform:   el-8-x86_64
+    box:        generic/oracle8
     hypervisor: vagrant
 
 CONFIG:
