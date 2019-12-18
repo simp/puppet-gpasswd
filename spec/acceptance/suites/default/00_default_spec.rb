@@ -46,7 +46,7 @@ describe 'gpasswd' do
       end
 
       it 'should have populated the group' do
-        group_members = on(host, "getent group #{group}").output.strip.split(':')[3] || []
+        group_members = on(host, "getent group #{group}").output.strip.split(':')[3].split(',') || []
 
         expect(group_members - users).to be_empty
       end
@@ -65,7 +65,7 @@ describe 'gpasswd' do
       end
 
       it 'should have populated the group' do
-        group_members = on(host, "getent group #{group}").output.strip.split(':')[3] || []
+        group_members = on(host, "getent group #{group}").output.strip.split(':')[3].split(',') || []
 
         expect(group_members - users).to be_empty
       end
@@ -84,7 +84,7 @@ describe 'gpasswd' do
       end
 
       it 'should have populated the group' do
-        group_members = on(host, "getent group #{group}").output.strip.split(':')[3] || []
+        group_members = on(host, "getent group #{group}").output.strip.split(':')[3].split(',') || []
 
         expect(group_members - users).to be_empty
       end
@@ -103,7 +103,7 @@ describe 'gpasswd' do
       end
 
       it 'should have populated the group' do
-        group_members = on(host, "getent group #{group}").output.strip.split(':')[3] || []
+        group_members = on(host, "getent group #{group}").output.strip.split(':')[3].split(',') || []
 
         expect(group_members - (users + meddling_kids)).to be_empty
       end
@@ -123,7 +123,7 @@ describe 'gpasswd' do
       end
 
       it 'should have populated the group' do
-        group_members = on(host, "getent group #{group}").output.strip.split(':')[3] || []
+        group_members = on(host, "getent group #{group}").output.strip.split(':')[3].split(',') || []
 
         expect(group_members - ['user1','user2']).to be_empty
       end

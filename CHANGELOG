@@ -1,3 +1,8 @@
+* Tue Dec 17 2019 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.1.1-0
+- Execute a single modify command instead of a list of 'add' and 'delete'
+  commands
+- Capture stderr on command runs
+
 * Fri Dec 13 2019 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.1.0-0
 - Add EL8 support
 - Fixed a bug where the system would incorrectly attempt to process users even

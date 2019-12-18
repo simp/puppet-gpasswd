@@ -7,7 +7,7 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
     described_class.stubs(:command).with(:delete).returns '/usr/sbin/groupdel'
     described_class.stubs(:command).with(:modify).returns '/usr/sbin/groupmod'
     described_class.stubs(:command).with(:addmember).returns '/usr/bin/gpasswd'
-    described_class.stubs(:command).with(:delmember).returns '/usr/bin/gpasswd'
+    described_class.stubs(:command).with(:modmember).returns '/usr/bin/gpasswd'
 
     if members
       @resource = Puppet::Type.type(:group).new(:name => 'mygroup', :members => members, :provider => provider)
@@ -38,7 +38,8 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
         '/usr/sbin/groupadd -g 555 -o mygroup',
         {
           :custom_environment => {},
-          :failonfail => false
+          :failonfail         => false,
+          :combine            => true
         }
       ).returns(success_output)
 
@@ -58,7 +59,8 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
           '/usr/sbin/groupadd -r mygroup',
           {
             :custom_environment => {},
-            :failonfail => false
+            :failonfail         => false,
+            :combine            => true
           }
         ).returns(success_output)
         provider.create
@@ -78,7 +80,8 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
           '/usr/sbin/groupadd mygroup',
           {
             :custom_environment => {},
-            :failonfail => false
+            :failonfail         => false,
+            :combine            => true
           }
         ).returns(success_output)
 
@@ -100,7 +103,8 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
           '/usr/sbin/groupadd mygroup',
           {
             :custom_environment => {},
-            :failonfail => false
+            :failonfail         => false,
+            :combine            => true
           }
         ).returns(success_output)
 
@@ -109,7 +113,8 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
             "/usr/bin/gpasswd -a #{member} mygroup",
             {
               :custom_environment => {},
-              :failonfail => false
+              :failonfail         => false,
+              :combine            => true
             }
           ).returns(success_output)
         end
@@ -131,7 +136,8 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
             "/usr/bin/gpasswd -a #{member} mygroup",
             {
               :custom_environment => {},
-              :failonfail => false
+              :failonfail         => false,
+              :combine            => true
             }
           ).returns(success_output)
         end
@@ -156,7 +162,8 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
             "/usr/bin/gpasswd -a #{member} mygroup",
             {
               :custom_environment => {},
-              :failonfail => false
+              :failonfail         => false,
+              :combine            => true
             }
           ).returns(success_output)
         end
@@ -179,24 +186,14 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
 
         @resource[:auth_membership] = :true
 
-        (members - old_members).each do |to_add|
-          provider.expects(:execute).with(
-            "/usr/bin/gpasswd -a #{to_add} mygroup",
-            {
-              :custom_environment => {},
-              :failonfail => false
-            }
-          ).returns(success_output)
-        end
-        (old_members - members).each do |to_del|
-          provider.expects(:execute).with(
-            "/usr/bin/gpasswd -d #{to_del} mygroup",
-            {
-              :custom_environment => {},
-              :failonfail => false
-            }
-          ).returns(success_output)
-        end
+        provider.expects(:execute).with(
+          "/usr/bin/gpasswd -M #{members.join(',')} mygroup",
+          {
+            :custom_environment => {},
+            :failonfail         => false,
+            :combine            => true
+          }
+        ).returns(success_output)
 
         provider.create
 

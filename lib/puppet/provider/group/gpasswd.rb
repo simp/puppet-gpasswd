@@ -9,7 +9,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   EOM
 
   commands  :addmember => 'gpasswd',
-            :delmember => 'gpasswd'
+            :modmember => 'gpasswd'
 
   has_feature :manages_members unless %w{HP-UX Solaris}.include? Facter.value(:operatingsystem)
   has_feature :libuser if Puppet.features.libuser?
@@ -110,28 +110,26 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
 
   def members=(to_set)
     cmd = []
+
     if is_new_format?
       to_be_added = to_set.split(',')
     else
       to_be_added = to_set.dup
     end
 
-    if @resource[:auth_membership]
-      to_be_removed = @current_members - to_be_added
-      to_be_added = to_be_added - @current_members
+    unless to_be_added.empty?
+      if @resource[:auth_membership]
+        cmd << [ command(:modmember),'-M',to_be_added.join(','), @resource[:name] ].shelljoin
+      else
+        to_be_added = to_be_added | @current_members
 
-      !to_be_removed.empty? && cmd += to_be_removed.map { |x|
-        [ command(:addmember),'-d',x,@resource[:name] ].shelljoin
-      }
-    else
-      to_be_added = to_be_added | @current_members
+        !to_be_added.empty? && cmd += to_be_added.map { |x|
+          [ command(:addmember),'-a',x,@resource[:name] ].shelljoin
+        }
+      end
+
+      mod_group(cmd)
     end
-
-    !to_be_added.empty? && cmd += to_be_added.map { |x|
-      [ command(:addmember),'-a',x,@resource[:name] ].shelljoin
-    }
-
-    mod_group(cmd)
   end
 
   private
@@ -149,7 +147,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   def mod_group(cmds)
     cmds.each do |run_cmd|
       begin
-        output = execute(run_cmd, :custom_environment => @custom_environment, :failonfail => false)
+        output = execute(run_cmd, :custom_environment => @custom_environment, :failonfail => false, :combine => true)
 
         if output.exitstatus != 0
           Puppet.warning("Error modifying #{@resource[:name]} using '#{run_cmd}': #{output}")
