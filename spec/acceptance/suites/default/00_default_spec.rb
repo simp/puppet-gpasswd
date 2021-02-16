@@ -34,6 +34,15 @@ describe 'gpasswd' do
 
   hosts.each do |host|
     context 'with a sorted list of users' do
+      # When the tests pass with this in place, then upstream puppet has
+      # achieved functionaly parity
+=begin
+      it 'should whack the module' do
+        on(host, 'rm -rf /etc/puppetlabs/code/environments/production/modules/gpasswd')
+        on(host, 'rm -rf `puppet config print vardir`/lib/*')
+      end
+=end
+
       let(:users) { hoopy_froods.sort }
 
       # Using puppet_apply as a helper
@@ -149,6 +158,12 @@ describe 'gpasswd' do
 
       it 'should be idempotent' do
         apply_manifest_on(host, manifest, :catch_changes => true)
+      end
+    end
+
+    context 'ensure that "puppet resource group" still functions' do
+      it 'should run "puppet resource group" without issue' do
+        on(host, 'puppet resource group')
       end
     end
   end

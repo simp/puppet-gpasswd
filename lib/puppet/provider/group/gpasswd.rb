@@ -42,8 +42,18 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   # The self.class.name matches are hard coded so cannot be easily
   # overridden.
   def modifycmd(param, value)
-    cmd = [command(param.to_s =~ /password_.+_age/ ? :password : :modify)]
-    cmd << flag(param) << value
+    cmd_type = param.to_s =~ /password_.+_age/ ? :password : :modify
+    cmd = [command(cmd_type)]
+    cmd_flag = flag(param)
+
+    # Work around issues with Puppet 6.20+
+    #
+    # Basically, these versions are trying to approach something that works but
+    # aren't quite there yet and will actually try to remove all of the users
+    # instead of adding them.
+    return ['/bin/true'] if (cmd_type == :modify) && (cmd_flag == '-m')
+
+    cmd << cmd_flag << value
     if @resource.allowdupe? && (param == :gid)
       cmd << "-o"
     end
@@ -54,6 +64,8 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
 
   def members
     members_to_set = @resource.parameter('members').shouldorig
+
+    return unless members_to_set
 
     @current_members = []
     begin
