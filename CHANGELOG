@@ -1,3 +1,6 @@
+* Sun Oct 03 2021 Iain Hallam <iain@nineworlds.net> - 1.1.3-0
+- Add support for Debian
+
 * Mon Feb 15 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 1.1.2-0
 - Fixed an issue with running `puppet resource group`
 - Added support for Puppet 7
