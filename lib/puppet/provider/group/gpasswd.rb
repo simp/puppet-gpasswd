@@ -129,19 +129,17 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
       to_be_added = to_set.dup
     end
 
-    unless to_be_added.empty?
-      if @resource[:auth_membership]
-        cmd << [ command(:modmember),'-M',to_be_added.join(','), @resource[:name] ].shelljoin
-      else
-        to_be_added = to_be_added | @current_members
+    if @resource[:auth_membership]
+      cmd << [ command(:modmember),'-M',to_be_added.join(','), @resource[:name] ].shelljoin
+    else
+      to_be_added = to_be_added | @current_members
 
-        !to_be_added.empty? && cmd += to_be_added.map { |x|
-          [ command(:addmember),'-a',x,@resource[:name] ].shelljoin
-        }
-      end
-
-      mod_group(cmd)
+      !to_be_added.empty? && cmd += to_be_added.map { |x|
+        [ command(:addmember),'-a',x,@resource[:name] ].shelljoin
+      }
     end
+
+    mod_group(cmd)
   end
 
   private
