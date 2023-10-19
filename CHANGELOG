@@ -1,3 +1,6 @@
+* Wed Oct 14 2026 David Gardner <github.com@icmfp.com> - 2.2.1
+- Empty the group when `members => []` and `auth_membership => true`
+
 * Thu Oct 08 2026 Steven Pritchard <steve@sicura.us> - 2.2.0
 - Add support for OpenVox 9
 - Update metadata.json dependency ranges from the Forge
