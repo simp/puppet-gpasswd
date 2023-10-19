@@ -124,7 +124,6 @@ Puppet::Type.type(:group).provide :gpasswd, parent: Puppet::Type::Group::Provide
                     to_set.dup
                   end
 
-    return if to_be_added.empty?
     if @resource[:auth_membership]
       cmd << [ command(:modmember), '-M', to_be_added.join(','), @resource[:name] ].shelljoin
     else
