@@ -105,10 +105,10 @@ Puppet::Type.type(:group).provide :gpasswd, parent: Puppet::Type::Group::Provide
         Puppet::Etc.send('getpwnam', user)
       end
 
-      Puppet.debug("Ignoring unknown user: '#{user}'")
-
       false
     rescue
+      Puppet.debug("Ignoring unknown user: '#{user}'")
+
       true
     end
 
