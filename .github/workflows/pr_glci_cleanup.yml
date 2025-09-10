@@ -40,7 +40,7 @@ jobs:
     # `on` section is inadventently modified without considering the security
     # implications.
     if: github.event_name == 'pull_request_target' && github.event.action == 'closed'
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
         with:
