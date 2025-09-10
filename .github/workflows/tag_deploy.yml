@@ -141,7 +141,7 @@ jobs:
         id: tag-check
         run: echo "::set-output name=tag::${GITHUB_REF/refs\/tags\//}"
       - name: Trigger RPM release workflow (${{ matrix.os }})
-        uses: actions/github-script@v4
+        uses: actions/github-script@v8
         env:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           TARGET_TAG: ${{ steps.tag-check.outputs.tag }}
