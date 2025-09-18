@@ -8,7 +8,7 @@ describe 'gpasswd' do
     'arthur',
     'ford',
     'zaphod',
-    'trillian'
+    'trillian',
   ]
 
   meddling_kids = [
@@ -16,16 +16,17 @@ describe 'gpasswd' do
     'daphne',
     'velma',
     'shaggy',
-    'scooby'
+    'scooby',
   ]
 
-  let(:manifest){<<-EOM
+  let(:manifest) do
+    <<~EOM
       $users = ['#{users.join("','")}']
       $users.each |$user| { user { $user: ensure => 'present' } }
 
       group { '#{group}': members => $users, gid => #{gid}, system => #{system}, auth_membership => #{auth_membership} }
     EOM
-  }
+  end
 
   let(:auth_membership) { true }
   let(:system) { false }
@@ -36,25 +37,23 @@ describe 'gpasswd' do
     context 'with a sorted list of users' do
       # When the tests pass with this in place, then upstream puppet has
       # achieved functionaly parity
-=begin
-      it 'should whack the module' do
-        on(host, 'rm -rf /etc/puppetlabs/code/environments/production/modules/gpasswd')
-        on(host, 'rm -rf `puppet config print vardir`/lib/*')
-      end
-=end
+      #       it 'should whack the module' do
+      #         on(host, 'rm -rf /etc/puppetlabs/code/environments/production/modules/gpasswd')
+      #         on(host, 'rm -rf `puppet config print vardir`/lib/*')
+      #       end
 
       let(:users) { hoopy_froods.sort }
 
       # Using puppet_apply as a helper
-      it 'should work with no errors' do
-        apply_manifest_on(host, manifest, :catch_failures => true)
+      it 'works with no errors' do
+        apply_manifest_on(host, manifest, catch_failures: true)
       end
 
-      it 'should be idempotent' do
-        apply_manifest_on(host, manifest, {:catch_changes => true})
+      it 'is idempotent' do
+        apply_manifest_on(host, manifest, { catch_changes: true })
       end
 
-      it 'should have populated the group' do
+      it 'has populated the group' do
         group_members = on(host, "getent group #{group}").output.strip.split(':')[3].split(',') || []
 
         expect(group_members - users).to be_empty
@@ -65,15 +64,15 @@ describe 'gpasswd' do
       let(:users) { hoopy_froods - [hoopy_froods.last] }
 
       # Using puppet_apply as a helper
-      it 'should work with no errors' do
-        apply_manifest_on(host, manifest, :catch_failures => true)
+      it 'works with no errors' do
+        apply_manifest_on(host, manifest, catch_failures: true)
       end
 
-      it 'should be idempotent' do
-        apply_manifest_on(host, manifest, {:catch_changes => true})
+      it 'is idempotent' do
+        apply_manifest_on(host, manifest, { catch_changes: true })
       end
 
-      it 'should have populated the group' do
+      it 'has populated the group' do
         group_members = on(host, "getent group #{group}").output.strip.split(':')[3].split(',') || []
 
         expect(group_members - users).to be_empty
@@ -84,15 +83,15 @@ describe 'gpasswd' do
       let(:users) { meddling_kids }
 
       # Using puppet_apply as a helper
-      it 'should work with no errors' do
-        apply_manifest_on(host, manifest, :catch_failures => true)
+      it 'works with no errors' do
+        apply_manifest_on(host, manifest, catch_failures: true)
       end
 
-      it 'should be idempotent' do
-        apply_manifest_on(host, manifest, {:catch_changes => true})
+      it 'is idempotent' do
+        apply_manifest_on(host, manifest, { catch_changes: true })
       end
 
-      it 'should have populated the group' do
+      it 'has populated the group' do
         group_members = on(host, "getent group #{group}").output.strip.split(':')[3].split(',') || []
 
         expect(group_members - users).to be_empty
@@ -103,15 +102,15 @@ describe 'gpasswd' do
       let(:users) { hoopy_froods }
 
       # Using puppet_apply as a helper
-      it 'should work with no errors' do
-        apply_manifest_on(host, manifest, :catch_failures => true)
+      it 'works with no errors' do
+        apply_manifest_on(host, manifest, catch_failures: true)
       end
 
-      it 'should be idempotent' do
-        apply_manifest_on(host, manifest, {:catch_changes => true})
+      it 'is idempotent' do
+        apply_manifest_on(host, manifest, { catch_changes: true })
       end
 
-      it 'should have populated the group' do
+      it 'has populated the group' do
         group_members = on(host, "getent group #{group}").output.strip.split(':')[3].split(',') || []
 
         expect(group_members - (users + meddling_kids)).to be_empty
@@ -124,45 +123,45 @@ describe 'gpasswd' do
       let(:gid) { '333' }
 
       # Using puppet_apply as a helper
-      it 'should work with no errors' do
-        apply_manifest_on(host, manifest, :catch_failures => true)
+      it 'works with no errors' do
+        apply_manifest_on(host, manifest, catch_failures: true)
       end
-      it 'should be idempotent' do
-        apply_manifest_on(host, manifest, {:catch_changes => true})
+      it 'is idempotent' do
+        apply_manifest_on(host, manifest, { catch_changes: true })
       end
 
-      it 'should have populated the group' do
+      it 'has populated the group' do
         group_members = on(host, "getent group #{group}").output.strip.split(':')[3].split(',') || []
 
-        expect(group_members - ['user1','user2']).to be_empty
+        expect(group_members - ['user1', 'user2']).to be_empty
       end
 
-      it 'should have a GID of 333' do
+      it 'has a GID of 333' do
         group_gid = on(host, "getent group #{group}").output.strip.split(':')[2]
         expect(group_gid).to eq '333'
       end
     end
 
     context 'with a user that does not exist' do
-      let(:manifest) {
-        <<-EOM
+      let(:manifest) do
+        <<~EOM
           user { 'real': ensure => 'present' }
           user { 'fake': ensure => 'absent' }
           group { 'real': members => ['real','fake'] }
         EOM
-      }
-
-      it 'should add the real user to the real group' do
-        apply_manifest_on(host, manifest, :catch_failures => true)
       end
 
-      it 'should be idempotent' do
-        apply_manifest_on(host, manifest, :catch_changes => true)
+      it 'adds the real user to the real group' do
+        apply_manifest_on(host, manifest, catch_failures: true)
+      end
+
+      it 'is idempotent' do
+        apply_manifest_on(host, manifest, catch_changes: true)
       end
     end
 
     context 'ensure that "puppet resource group" still functions' do
-      it 'should run "puppet resource group" without issue' do
+      it 'runs "puppet resource group" without issue' do
         on(host, 'puppet resource group')
       end
     end
