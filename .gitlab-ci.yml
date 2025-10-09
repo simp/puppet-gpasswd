@@ -227,28 +227,28 @@ variables:
 #-----------------------------------------------------------------------
 
 .pup_5_x: &pup_5_x
-  image: 'ruby:2.4'
+  image: 'ruby:2.7'
   variables:
     PUPPET_VERSION: '~> 5.0'
     BEAKER_PUPPET_COLLECTION: 'puppet5'
     MATRIX_RUBY_VERSION: '2.4'
 
 .pup_5_pe: &pup_5_pe
-  image: 'ruby:2.4'
+  image: 'ruby:2.7'
   variables:
     PUPPET_VERSION: '5.5.22'
     BEAKER_PUPPET_COLLECTION: 'puppet5'
     MATRIX_RUBY_VERSION: '2.4'
 
 .pup_6_x: &pup_6_x
-  image: 'ruby:2.5'
+  image: 'ruby:2.7'
   variables:
     PUPPET_VERSION: '~> 6.0'
     BEAKER_PUPPET_COLLECTION: 'puppet6'
     MATRIX_RUBY_VERSION: '2.5'
 
 .pup_6_pe: &pup_6_pe
-  image: 'ruby:2.5'
+  image: 'ruby:2.7'
   variables:
     PUPPET_VERSION: '6.18.0'
     BEAKER_PUPPET_COLLECTION: 'puppet6'
