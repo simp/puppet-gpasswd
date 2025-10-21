@@ -18,13 +18,16 @@ group :test do
   gem 'rspec'
   gem 'rspec-puppet'
   gem 'hiera-puppet-helper'
-  gem 'puppetlabs_spec_helper'
+  gem 'puppetlabs_spec_helper', '~> 8.0.0'
   gem 'metadata-json-lint'
   gem 'puppet-strings'
   gem 'puppet-lint-empty_string-check',   :require => false
   gem 'puppet-lint-trailing_comma-check', :require => false
-  gem 'simp-rspec-puppet-facts', ENV['SIMP_RSPEC_PUPPET_FACTS_VERSION'] || '~> 3.1'
-  gem 'simp-rake-helpers', ENV['SIMP_RAKE_HELPERS_VERSION'] || ['>= 5.11.5', '< 6']
+  # renovate: datasource=rubygems versioning=ruby
+  gem 'simp-rspec-puppet-facts', ENV['SIMP_RSPEC_PUPPET_FACTS_VERSION'] || '~> 4.0.0'
+  # renovate: datasource=rubygems versioning=ruby
+  gem 'simp-rake-helpers', ENV.fetch('SIMP_RAKE_HELPERS_VERSION', '~> 5.24.0')
+  # renovate: datasource=rubygems versioning=ruby
   gem( 'pdk', ENV['PDK_VERSION'] || '~> 1.0', :require => false) if major_puppet_version > 5
   gem 'pathspec', '~> 0.2' if Gem::Requirement.create('< 2.6').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
 end
@@ -38,7 +41,8 @@ end
 group :system_tests do
   gem 'beaker'
   gem 'beaker-rspec'
-  gem 'simp-beaker-helpers', ENV['SIMP_BEAKER_HELPERS_VERSION'] || ['>= 1.21.4', '< 2']
+  # renovate: datasource=rubygems versioning=ruby
+  gem 'simp-beaker-helpers', ENV.fetch('SIMP_BEAKER_HELPERS_VERSION', '~> 2.0.0')
 end
 
 # Evaluate extra gemfiles if they exist
