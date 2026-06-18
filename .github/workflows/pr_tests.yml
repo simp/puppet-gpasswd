@@ -31,7 +31,7 @@ jobs:
     name: 'Puppet Syntax'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: "Install Ruby 2.7"
         uses: ruby/setup-ruby@v1  # ruby/setup-ruby@ec106b438a1ff6ff109590de34ddc62c540232e0
         with:
@@ -43,7 +43,7 @@ jobs:
     name: 'Puppet Style'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: "Install Ruby 2.7"
         uses: ruby/setup-ruby@v1
         with:
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: "Install Ruby 2.7"
         uses: ruby/setup-ruby@v1
         with:
@@ -72,7 +72,7 @@ jobs:
     name: 'File checks'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: 'Install Ruby 2.7'
         uses: ruby/setup-ruby@v1
         with:
@@ -85,7 +85,7 @@ jobs:
     name: 'RELENG checks'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: 'Install Ruby 2.7'
         uses: ruby/setup-ruby@v1
         with:
@@ -118,7 +118,7 @@ jobs:
     env:
       PUPPET_VERSION: ${{matrix.puppet.puppet_version}}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: 'Install Ruby ${{matrix.puppet.ruby_version}}'
         uses: ruby/setup-ruby@v1
         with:
