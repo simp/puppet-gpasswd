@@ -1,0 +1,20 @@
+---
+HOSTS:
+  debian12:
+    roles:
+    - default
+    platform: debian-12-amd64
+    hypervisor: docker
+    image: debian:12
+    docker_cmd: ['/sbin/init']
+    docker_preserve_image: true
+    docker_image_commands:
+      - 'apt-get update && apt-get install -y systemd systemd-sysv openssh-server wget gnupg rsync openssl'
+    dockeropts:
+      HostConfig:
+        Memory: 536870912
+        Privileged: true
+CONFIG:
+  log_level: verbose
+  type: aio
+  puppet_collection: "<%= ENV.fetch('BEAKER_PUPPET_COLLECTION', 'openvox8') %>"
