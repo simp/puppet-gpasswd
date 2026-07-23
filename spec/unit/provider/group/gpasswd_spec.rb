@@ -1,5 +1,6 @@
 #!/usr/bin/env rspec
 require 'spec_helper'
+require 'etc'
 
 describe Puppet::Type.type(:group).provider(:gpasswd) do
   before do
@@ -170,7 +171,7 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
         )
 
         expect(Puppet::Etc).to receive(:getgrnam).with('mygroup').and_return(
-          Struct::Group.new('mygroup','x','99999',[])
+          Etc::Group.new('mygroup','x','99999',[])
         ).at_least(:once)
 
         @resource[:auth_membership] = :false
@@ -211,7 +212,7 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
         )
 
         expect(Puppet::Etc).to receive(:getgrnam).with('mygroup').and_return(
-          Struct::Group.new('mygroup','x','99999',old_members)
+          Etc::Group.new('mygroup','x','99999',old_members)
         ).at_least(:once)
 
         @resource[:auth_membership] = :false
@@ -252,7 +253,7 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
         )
 
         expect(Puppet::Etc).to receive(:getgrnam).with('mygroup').and_return(
-          Struct::Group.new('mygroup','x','99999',old_members)
+          Etc::Group.new('mygroup','x','99999',old_members)
         ).at_least(:once)
 
         @resource[:auth_membership] = :true

@@ -1,3 +1,14 @@
+* Thu Jul 16 2026 Steven Pritchard <steve@sicura.us> - 2.0.0
+- Migrate to the OpenVox test stack (openvox gem, voxpupuli-test,
+  simp-rake-helpers 6.x, simp-beaker-helpers 3.x) and add a Ruby 4.0 /
+  OpenVox 9 preview to the test matrix
+- Switch metadata requirements from puppet to openvox (>= 8 < 9)
+- Drop end-of-life OS support (EL6/EL7, Debian 9/10, Ubuntu 16.04,
+  OpenSUSE); list EL8-10, Debian 11/12, and Ubuntu 22.04/24.04
+- Point source and issue URLs at the simp/puppet-gpasswd repository
+- Drop GitLab CI configuration and adopt the SIMP renovate presets
+- Sync GitHub Actions workflows with the current SIMP baseline
+
 * Sun Oct 03 2021 Iain Hallam <iain@nineworlds.net> - 1.1.3-0
 - Add support for Debian
 
