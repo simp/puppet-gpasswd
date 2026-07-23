@@ -1,21 +1,21 @@
 require 'puppet/provider/group/groupadd'
 
-Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::ProviderGroupadd do
+Puppet::Type.type(:group).provide :gpasswd, parent: Puppet::Type::Group::ProviderGroupadd do
   require 'shellwords'
 
-  desc <<-EOM
+  desc <<~EOM
     Group management via `gpasswd`. This allows for local group
     management when the users exist in a remote system.
   EOM
 
-  commands  :addmember => 'gpasswd',
-            :modmember => 'gpasswd'
+  commands  addmember: 'gpasswd',
+            modmember: 'gpasswd'
 
-  has_feature :manages_members unless %w{HP-UX Solaris}.include? Facter.value(:operatingsystem)
+  has_feature :manages_members unless ['HP-UX', 'Solaris'].include? Facter.value(:operatingsystem)
   has_feature :libuser if Puppet.features.libuser?
-  has_feature :system_groups unless %w{HP-UX Solaris}.include? Facter.value(:operatingsystem)
+  has_feature :system_groups unless ['HP-UX', 'Solaris'].include? Facter.value(:operatingsystem)
 
-  def is_new_format?
+  def is_new_format? # rubocop:disable Style/PredicatePrefix
     defined?(Puppet::Property::List) &&
       @resource.parameter('members').class.ancestors.include?(Puppet::Property::List)
   end
@@ -23,26 +23,26 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   def addcmd
     # This pulls in the main group add command should the group need
     # to be added from scratch.
-    cmd = Array(super.map{|x| x = "#{x}"}.shelljoin)
+    cmd = Array(super.map { |x| x.to_s }.shelljoin)
 
     if @resource.parameter('members')
-      cmd += @resource.property('members').shouldorig.map{ |x|
-        [ command(:addmember),'-a',x,@resource[:name] ].shelljoin
-      }
+      cmd += @resource.property('members').shouldorig.map do |x|
+        [ command(:addmember), '-a', x, @resource[:name] ].shelljoin
+      end
     end
 
-      mod_group(cmd)
+    mod_group(cmd)
 
     # We're returning /bin/true here since the Nameservice classes
     # would execute whatever is returned here.
-    return '/bin/true'
+    '/bin/true'
   end
 
   # This is a repeat from puppet/provider/nameservice/objectadd.
   # The self.class.name matches are hard coded so cannot be easily
   # overridden.
   def modifycmd(param, value)
-    cmd_type = param.to_s =~ /password_.+_age/ ? :password : :modify
+    cmd_type = (param.to_s =~ %r{password_.+_age}) ? :password : :modify
     cmd = [command(cmd_type)]
     cmd_flag = flag(param)
 
@@ -55,7 +55,7 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
 
     cmd << cmd_flag << value
     if @resource.allowdupe? && (param == :gid)
-      cmd << "-o"
+      cmd << '-o'
     end
     cmd << @resource[:name]
 
@@ -86,62 +86,56 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
     retval = retval.sort
 
     # Puppet 5.5.7 breaking change workaround
-    if is_new_format?
-      return retval.join(',')
-    else
-      return retval
-    end
+    return retval.join(',') if is_new_format?
+
+    retval
   end
 
   def members_insync?(is, should)
     # We need to remove any user that the system doesn't recognize, otherwise
     # the add and/or remove commands will fail.
 
-    _should = Array(should).dup.sort.uniq
+    sorted_should = Array(should).dup.sort.uniq
 
-    _should.delete_if do |user|
-      begin
-        # This is an integer
-        if user.to_i.to_s == user
-          Puppet::Etc.send('getpwuid', user)
-        else
-          Puppet::Etc.send('getpwnam', user)
-        end
-
-        Puppet.debug("Ignoring unknown user: '#{user}'")
-
-        false
-      rescue
-
-        true
+    sorted_should.delete_if do |user|
+      # This is an integer
+      if user.to_i.to_s == user
+        Puppet::Etc.send('getpwuid', user)
+      else
+        Puppet::Etc.send('getpwnam', user)
       end
+
+      Puppet.debug("Ignoring unknown user: '#{user}'")
+
+      false
+    rescue
+      true
     end
 
-    Array(is).sort.uniq == _should
+    Array(is).sort.uniq == sorted_should
   end
 
   def members=(to_set)
     cmd = []
 
-    if is_new_format?
-      to_be_added = to_set.split(',')
+    to_be_added = if is_new_format?
+                    to_set.split(',')
+                  else
+                    to_set.dup
+                  end
+
+    return if to_be_added.empty?
+    if @resource[:auth_membership]
+      cmd << [ command(:modmember), '-M', to_be_added.join(','), @resource[:name] ].shelljoin
     else
-      to_be_added = to_set.dup
-    end
+      to_be_added |= @current_members
 
-    unless to_be_added.empty?
-      if @resource[:auth_membership]
-        cmd << [ command(:modmember),'-M',to_be_added.join(','), @resource[:name] ].shelljoin
-      else
-        to_be_added = to_be_added | @current_members
-
-        !to_be_added.empty? && cmd += to_be_added.map { |x|
-          [ command(:addmember),'-a',x,@resource[:name] ].shelljoin
-        }
+      !to_be_added.empty? && cmd += to_be_added.map do |x|
+        [ command(:addmember), '-a', x, @resource[:name] ].shelljoin
       end
-
-      mod_group(cmd)
     end
+
+    mod_group(cmd)
   end
 
   private
@@ -158,14 +152,12 @@ Puppet::Type.type(:group).provide :gpasswd, :parent => Puppet::Type::Group::Prov
   # user.
   def mod_group(cmds)
     cmds.each do |run_cmd|
-      begin
-        output = execute(run_cmd, :custom_environment => @custom_environment, :failonfail => false, :combine => true)
+      output = execute(run_cmd, custom_environment: @custom_environment, failonfail: false, combine: true)
 
-        if output.exitstatus != 0
-          Puppet.warning("Error modifying #{@resource[:name]} using '#{run_cmd}': #{output}")
-        else
-          Puppet.debug("Success: #{run_cmd}")
-        end
+      if output.exitstatus != 0
+        Puppet.warning("Error modifying #{@resource[:name]} using '#{run_cmd}': #{output}")
+      else
+        Puppet.debug("Success: #{run_cmd}")
       end
     end
   end
