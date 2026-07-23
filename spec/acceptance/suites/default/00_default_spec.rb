@@ -3,21 +3,25 @@ require 'spec_helper_acceptance'
 test_name 'gpasswd extension'
 
 describe 'gpasswd' do
-  hoopy_froods = [
-    'marvin',
-    'arthur',
-    'ford',
-    'zaphod',
-    'trillian',
-  ]
+  let(:hoopy_froods) do
+    [
+      'marvin',
+      'arthur',
+      'ford',
+      'zaphod',
+      'trillian',
+    ]
+  end
 
-  meddling_kids = [
-    'fred',
-    'daphne',
-    'velma',
-    'shaggy',
-    'scooby',
-  ]
+  let(:meddling_kids) do
+    [
+      'fred',
+      'daphne',
+      'velma',
+      'shaggy',
+      'scooby',
+    ]
+  end
 
   let(:manifest) do
     <<~EOM
