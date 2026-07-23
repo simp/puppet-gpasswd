@@ -1,0 +1,20 @@
+---
+HOSTS:
+  centos10:
+    roles:
+    - default
+    platform: el-10-x86_64
+    hypervisor: docker
+    image: quay.io/centos/centos:stream10
+    docker_cmd: ['/usr/sbin/init']
+    docker_preserve_image: true
+    docker_image_commands:
+      - 'yum install -y rsync openssl openssh-server'
+    dockeropts:
+      HostConfig:
+        Memory: 536870912
+        Privileged: true
+CONFIG:
+  log_level: verbose
+  type: aio
+  puppet_collection: "<%= ENV.fetch('BEAKER_PUPPET_COLLECTION', 'openvox8') %>"
