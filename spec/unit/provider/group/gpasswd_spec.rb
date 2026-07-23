@@ -173,7 +173,6 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
           ),
         )
 
-        pending 'FIXME'
         expect(Puppet::Etc).to receive(:getgrnam).with('mygroup').and_return(
           Etc::Group.new('mygroup', 'x', '99999', []),
         ).at_least(:once)
@@ -215,7 +214,6 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
           ),
         )
 
-        pending 'FIXME'
         expect(Puppet::Etc).to receive(:getgrnam).with('mygroup').and_return(
           Etc::Group.new('mygroup', 'x', '99999', old_members),
         ).at_least(:once)
@@ -257,7 +255,6 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
           ),
         )
 
-        pending 'FIXME'
         expect(Puppet::Etc).to receive(:getgrnam).with('mygroup').and_return(
           Etc::Group.new('mygroup', 'x', '99999', old_members),
         ).at_least(:once)
