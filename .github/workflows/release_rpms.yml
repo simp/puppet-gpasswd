@@ -92,7 +92,7 @@ jobs:
       ${{ (github.event.inputs.target_repo != null && format('{0}/{1}', github.repository_owner, github.event.inputs.target_repo)) || github.repository }}
       ${{ github.event.inputs.release_tag }}
       (build os: ${{ github.event.inputs.build_container_os }})
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: "Validate inputs"
         id: validate-inputs
@@ -126,7 +126,7 @@ jobs:
         env:
           AUTOCREATE_RELEASE: ${{ github.event.inputs.autocreate_release }}
           PREBUILD_TAG: ${{ steps.validate-inputs.outputs.prebuild_suffix }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ github.event.inputs.target_repo_token || secrets.GITHUB_TOKEN }}
           script: |
@@ -194,7 +194,7 @@ jobs:
             )
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           repository: ${{ env.TARGET_REPO }}
           ref: ${{ env.RELEASE_TAG }}
@@ -259,7 +259,7 @@ jobs:
 
       - name: "Wipe all previous assets from GitHub Release (when clean == 'yes')"
         if: ${{ github.event.inputs.clean == 'yes' && github.event.inputs.dry_run != 'yes' }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           release_id:  ${{ steps.release-api.outputs.id }}
         with:
@@ -278,7 +278,7 @@ jobs:
 
       - name: "Upload RPM file(s) to GitHub Release (dry_run != 'yes')"
         if: ${{ github.event.inputs.dry_run != 'yes' }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           rpm_file_paths: ${{ steps.build-and-sign-rpm.outputs.rpm_file_paths }}
           rpm_gpg_file: ${{ steps.build-and-sign-rpm.outputs.rpm_gpg_file }}

@@ -1,64 +1,73 @@
 {
   "name": "onyxpoint-gpasswd",
-  "version": "1.1.3",
+  "version": "2.0.0",
   "author": "Trevor Vaughan <tvaughan@onyxpoint.com>",
   "summary": "Adds support for :manages_members to the Linux group native type",
   "license": "Apache-2.0",
-  "source": "https://github.com/onyxpoint/puppet-gpasswd",
-  "project_page": "https://github.com/onyxpoint/puppet-gpasswd",
-  "issues_url": "https://github.com/onyxpoint/puppet-gpasswd/issues",
+  "source": "https://github.com/simp/puppet-gpasswd",
+  "project_page": "https://github.com/simp/puppet-gpasswd",
+  "issues_url": "https://github.com/simp/puppet-gpasswd/issues",
   "description": "The Linux group native type cannot manage local group membership. This remedies the situation by providing the :manages_members attribute and using gpasswd for group modification.",
-  "dependencies": [ ],
+  "dependencies": [],
   "operatingsystem_support": [
     {
       "operatingsystem": "CentOS",
       "operatingsystemrelease": [
-        "6",
-        "7",
-        "8"
-      ]
-    },
-    {
-      "operatingsystem": "Debian",
-      "operatingsystemrelease": [
         "9",
-        "10",
-        "11"
+        "10"
       ]
     },
     {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
-        "6",
-        "7",
-        "8"
+        "8",
+        "9",
+        "10"
       ]
     },
     {
       "operatingsystem": "OracleLinux",
       "operatingsystemrelease": [
-        "6",
-        "7",
-        "8"
+        "8",
+        "9",
+        "10"
+      ]
+    },
+    {
+      "operatingsystem": "Rocky",
+      "operatingsystemrelease": [
+        "8",
+        "9",
+        "10"
+      ]
+    },
+    {
+      "operatingsystem": "AlmaLinux",
+      "operatingsystemrelease": [
+        "8",
+        "9",
+        "10"
+      ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "11",
+        "12"
       ]
     },
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "16.04"
-      ]
-    },
-    {
-      "operatingsystem": "OpenSUSE",
-      "operatingsystemrelease": [
-        "42.2"
+        "22.04",
+        "24.04"
       ]
     }
   ],
   "requirements": [
     {
-      "name": "puppet",
-      "version_requirement": ">= 5.0.0 < 8.0.0"
+      "name": "openvox",
+      "version_requirement": ">= 8.0.0 < 9.0.0"
     }
   ]
 }
