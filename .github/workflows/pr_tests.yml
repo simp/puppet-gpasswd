@@ -25,7 +25,7 @@ jobs:
       - name: "Install Ruby 3.2"
         uses: ruby/setup-ruby@v1  # ruby/setup-ruby@ec106b438a1ff6ff109590de34ddc62c540232e0
         with:
-          ruby-version: 3.2.11
+          ruby-version: 3.4.10
           bundler-cache: true
       - run: "bundle exec rake syntax"
 
@@ -37,7 +37,7 @@ jobs:
       - name: "Install Ruby 3.2"
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2.11
+          ruby-version: 3.4.10
           bundler-cache: true
       - run: "bundle exec rake lint"
       - run: "bundle exec rake metadata_lint"
@@ -51,7 +51,7 @@ jobs:
       - name: "Install Ruby 3.4"
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.4.9
+          ruby-version: 3.4.10
           bundler-cache: true
       - run: |
           bundle show
@@ -65,7 +65,7 @@ jobs:
       - name: 'Install Ruby 3.4'
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.4.9
+          ruby-version: 3.4.10
           bundler-cache: true
       - run: bundle exec rake check:dot_underscore
       - run: bundle exec rake check:test_file
@@ -78,7 +78,7 @@ jobs:
       - name: 'Install Ruby 3.4'
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.4.9
+          ruby-version: 3.4.10
           bundler-cache: true
       - name: 'Tags and changelogs'
         run: |
