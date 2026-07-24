@@ -6,6 +6,9 @@
 - Drop end-of-life OS support (EL6/EL7, Debian 9/10, Ubuntu 16.04,
   OpenSUSE); list EL8-10, Debian 11/12, and Ubuntu 22.04/24.04
 - Point source and issue URLs at the simp/puppet-gpasswd repository
+- Rename the module from onyxpoint-gpasswd to simp-gpasswd so Forge
+  deployment publishes to the namespace the SIMP org can write to; the
+  RPM obsoletes pupmod-onyxpoint-gpasswd for upgrades
 - Drop GitLab CI configuration and adopt the SIMP renovate presets
 - Sync GitHub Actions workflows with the current SIMP baseline
 

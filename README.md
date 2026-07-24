@@ -38,4 +38,4 @@ Trevor Vaughan <tvaughan@onyxpoint.com>
 Support
 -------
 
-Please log tickets and issues at our [Gpasswd Github Site](https://github.com/onyxpoint/puppet-gpasswd/issues)
+Please log tickets and issues at our [Gpasswd Github Site](https://github.com/simp/puppet-gpasswd/issues)

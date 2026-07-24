@@ -1,0 +1,2 @@
+# Drop all Requires, Obsoletes, and Provides statements in here
+Obsoletes: pupmod-onyxpoint-gpasswd < 2.0.0

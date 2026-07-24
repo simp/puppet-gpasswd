@@ -1,7 +1,7 @@
 {
-  "name": "onyxpoint-gpasswd",
+  "name": "simp-gpasswd",
   "version": "2.0.0",
-  "author": "Trevor Vaughan <tvaughan@onyxpoint.com>",
+  "author": "SIMP Team",
   "summary": "Adds support for :manages_members to the Linux group native type",
   "license": "Apache-2.0",
   "source": "https://github.com/simp/puppet-gpasswd",
