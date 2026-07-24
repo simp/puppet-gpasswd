@@ -25,3 +25,21 @@ dist
 /log
 /doc
 /Gemfile.lock
+
+## AI coding assistant-specific configuration
+## The standard is AGENTS.md
+# Claude Code
+/CLAUDE.md
+/.claude/
+# GitHub Copilot
+/.github/copilot-instructions.md
+# Cursor
+/.cursor/
+/.cursorrules
+# Windsurf
+/.windsurf/
+/.windsurfrules
+# Gemini CLI
+/GEMINI.md
+# Cline
+/.clinerules/
