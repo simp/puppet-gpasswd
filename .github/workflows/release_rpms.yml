@@ -54,7 +54,11 @@ on:
       build_container_os:
         description: "Build container OS"
         required: true
-        default: 'centos8'
+        default: 'el8'
+      build_container_tag:
+        description: "Build container tag"
+        required: true
+        default: 'latest'
       target_repo:
         description: "Target repo (instead of this one)"
         required: false
@@ -253,7 +257,7 @@ jobs:
           gpg_signing_key_id: ${{ secrets.SIMP_DEV_GPG_SIGNING_KEY_ID }}
           gpg_signing_key_passphrase: ${{ secrets.SIMP_DEV_GPG_SIGNING_KEY_PASSPHRASE }}
           simp_core_ref_for_building_rpms: ${{ secrets.SIMP_CORE_REF_FOR_BUILDING_RPMS }}
-          simp_builder_docker_image: 'docker.io/simpproject/simp_build_${{ github.event.inputs.build_container_os }}:latest'
+          simp_builder_docker_image: 'ghcr.io/simp/simp-${{ github.event.inputs.build_container_os }}-build:${{ github.event.inputs.build_container_tag }}'
           path_to_build: "${{ (github.event.inputs.path_to_build != null && format('{0}/{1}', github.workspace, github.event.inputs.path_to_build)) || github.workspace }}"
           verbose: 'no'  #${{ github.event.inputs.verbose }}
 
