@@ -88,6 +88,18 @@ jobs:
       - name: 'Test-build the Puppet module'
         run: 'bundle exec rake pupmod:build'
 
+  reference-docs:
+    name: 'REFERENCE.md is up to date'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: 'Install Ruby 3.4'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4.9
+          bundler-cache: true
+      - run: 'bundle exec rake validate:strings'
+
   spec-tests:
     name: 'Puppet Spec'
     needs: [puppet-syntax]

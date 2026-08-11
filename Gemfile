@@ -23,7 +23,8 @@ group :test do
   openvox_version = ENV.fetch('OPENVOX_VERSION', puppet_version)
   gem 'hiera-puppet-helper'
   gem 'openvox', openvox_version
-  gem 'openvox-strings'
+  # TODO: revert to the released gem once provider rendering is merged upstream
+  gem 'openvox-strings', git: 'https://github.com/silug/openvox-strings', branch: 'add-provider-markdown'
   gem 'rake'
   gem 'rspec'
   gem 'rspec-puppet'

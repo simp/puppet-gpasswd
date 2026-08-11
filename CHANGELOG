@@ -1,3 +1,10 @@
+* Fri Jul 24 2026 Steven Pritchard <steve@sicura.us> - 2.0.1
+- Document the gpasswd provider inline (puppet-strings/YARD comments)
+- Add REFERENCE.md and a CI job that keeps it validated
+  (`rake validate:strings`); openvox-strings is temporarily sourced
+  from a fork branch that adds provider rendering to the markdown
+  generator, pending its release upstream
+
 * Thu Jul 16 2026 Steven Pritchard <steve@sicura.us> - 2.0.0
 - Migrate to the OpenVox test stack (openvox gem, voxpupuli-test,
   simp-rake-helpers 6.x, simp-beaker-helpers 3.x) and add a Ruby 4.0 /
