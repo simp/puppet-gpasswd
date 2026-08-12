@@ -132,13 +132,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TARGET_REPO: ${{ github.repository }}
-    strategy:
-      matrix:
-        os:
-          - centos7
-          - centos8
     steps:
-      - name: Trigger RPM release workflow (${{ matrix.os }})
+      # The build-OS matrix lives in release_rpms.yml (one dispatch builds
+      # every supported EL version) -- see simp/puppetsync#84
+      - name: Trigger RPM release workflow
         uses: actions/github-script@v9
         env:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
@@ -146,7 +143,7 @@ jobs:
         with:
           github-token: ${{ secrets.SIMP_AUTO_GITHUB_TOKEN__REPO_SCOPE }}
           script: |
-            console.log( `== Building tag: '${ process.env.TARGET_TAG }' for os '${{ matrix.os}}'` )
+            console.log( `== Building tag: '${ process.env.TARGET_TAG }'` )
             const [owner, repo] = process.env.TARGET_REPO.split('/')
             await github.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
               owner: owner,
@@ -156,11 +153,10 @@ jobs:
               inputs: {
                 release_tag: process.env.TARGET_TAG,
                 clean: 'no',
-                clobber: 'yes',
-                build_container_os: '${{ matrix.os }}'
+                clobber: 'yes'
               }
             }).then((result) => {
-              console.log( `== Submitted workflow dispatch to build RPMs from ${{ matrix.os }}: status ${result.status}` )
+              console.log( `== Submitted workflow dispatch to build RPMs: status ${result.status}` )
             })
 
   deploy-to-puppet-forge:
@@ -184,10 +180,34 @@ jobs:
           bundler-cache: true
       - name: Build Puppet module
         run: bundle exec rake pupmod:build
+      - name: Upload module archive as a workflow artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: puppet-module
+          path: pkg/*.tar.gz
+          if-no-files-found: error
+      - name: Attach module archive to the GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${GITHUB_REF_NAME}" pkg/*.tar.gz --clobber
       - name: Deploy to Puppet Forge (skipped when prerelease)
         run: |
-          curl -X POST --silent --show-error --fail \
+          file="$(find "$PWD/pkg" -name '*.tar.gz')"
+          echo "Uploading: ${file}"
+          response="$(mktemp)"
+          http_code="$(curl -X POST --silent --show-error \
             --user-agent "$FORGE_USER_AGENT" \
             --header "Authorization: Bearer ${PUPPETFORGE_API_TOKEN}" \
-            --form "file=@$(find $PWD/pkg -name ''*.tar.gz'')" \
-            "$FORGE_API_URL"
+            --form "file=@${file}" \
+            --write-out '%{http_code}' \
+            --output "$response" \
+            "$FORGE_API_URL")"
+          echo "Forge API response (HTTP ${http_code}):"
+          cat "$response"; echo
+          case "$http_code" in
+            2*) ;;
+            *)
+              echo "::error ::Puppet Forge upload failed with HTTP ${http_code} (see response above)"
+              exit 1
+              ;;
+          esac
