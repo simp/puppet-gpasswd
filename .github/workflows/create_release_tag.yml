@@ -1,0 +1,34 @@
+# Manual action to create + push a release tag from metadata.json & CHANGELOG
+# ------------------------------------------------------------------------------
+#
+#             NOTICE: **This file is maintained with puppetsync**
+#
+# This file is updated automatically as part of a puppet module baseline.
+#
+# The next baseline sync will overwrite any local changes to this file!
+#
+# ==============================================================================
+#
+# All logic lives in the reusable workflow in simp/gha-workflows; this file
+# only forwards the manual trigger. See simp/puppetsync#85.
+#
+---
+name: 'RELENG: Create release tag'
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (validate + report the tag annotation, don't push)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  create-release-tag:
+    uses: simp/gha-workflows/.github/workflows/puppet_create_release_tag.yml@v1.0.0
+    with:
+      dry_run: ${{ inputs.dry_run }}
+    secrets: inherit
+    permissions:
+      contents: write
