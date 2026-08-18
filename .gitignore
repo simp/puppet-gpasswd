@@ -11,7 +11,9 @@ dist
 /pkg
 # Read everything in fixtures
 /spec/fixtures/*
-# Un-ignore hieradata
+# Un-ignore hieradata. The directory itself must be re-included first, otherwise
+# `/spec/fixtures/*` above excludes it and git cannot re-include files within it.
+!/spec/fixtures/hieradata/
 !/spec/fixtures/hieradata/*
 # Except this one, which is auto-generated
 /spec/fixtures/hieradata/hiera.yaml
@@ -25,6 +27,7 @@ dist
 /log
 /doc
 /Gemfile.lock
+/Gemfile.local
 
 ## AI coding assistant-specific configuration
 ## The standard is AGENTS.md
