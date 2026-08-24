@@ -126,9 +126,13 @@ RSpec.configure do |c|
       end
     end
 
-    File.open(c.hiera_config, 'w') do |f|
-      f.write data.to_yaml
-    end
+    # Write atomically (write + rename) — every parallel_spec worker runs
+    # this hook, and a truncating write here can be observed as an empty
+    # hiera.yaml by a catalogue compile in another worker, silently dropping
+    # all custom hieradata (simp/pupmod-simp-simplib#362)
+    tmpfile = "#{c.hiera_config}.#{Process.pid}"
+    File.write(tmpfile, data.to_yaml)
+    File.rename(tmpfile, c.hiera_config)
   end
   # rubocop:enable RSpec/BeforeAfterAll
 
