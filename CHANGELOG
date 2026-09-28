@@ -1,3 +1,7 @@
+* Mon Sep 28 2026 Steven Pritchard <steve@sicura.us> - 2.1.0
+- Add Debian 13 support
+- Drop support for Debian 11, which is end of life
+
 * Thu Jul 16 2026 Steven Pritchard <steve@sicura.us> - 2.0.0
 - Migrate to the OpenVox test stack (openvox gem, voxpupuli-test,
   simp-rake-helpers 6.x, simp-beaker-helpers 3.x) and add a Ruby 4.0 /
