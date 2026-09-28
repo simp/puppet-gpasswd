@@ -147,8 +147,8 @@ jobs:
           - docker_alma10
           - docker_centos9
           - docker_centos10
-          - docker_debian11
           - docker_debian12
+          - docker_debian13
           - docker_oel8
           - docker_oel9
           - docker_oel10
