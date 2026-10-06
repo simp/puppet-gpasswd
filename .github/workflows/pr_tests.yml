@@ -45,7 +45,6 @@ jobs:
   ruby-style:
     name: 'Ruby Style'
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v7
       - name: 'Install Ruby'

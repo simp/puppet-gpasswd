@@ -15,7 +15,7 @@ Puppet::Type.type(:group).provide :gpasswd, parent: Puppet::Type::Group::Provide
   has_feature :libuser if Puppet.features.libuser?
   has_feature :system_groups unless ['HP-UX', 'Solaris'].include? Facter.value(:operatingsystem)
 
-  def is_new_format? # rubocop:disable Style/PredicatePrefix
+  def is_new_format? # rubocop:disable Naming/PredicatePrefix
     defined?(Puppet::Property::List) &&
       @resource.parameter('members').class.ancestors.include?(Puppet::Property::List)
   end

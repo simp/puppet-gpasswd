@@ -1,3 +1,6 @@
+* Sun Oct 04 2026 Steven Pritchard <steve@sicura.us> - 2.1.1
+- Fix rubocop 1.91 style offenses (no functional change)
+
 * Mon Sep 28 2026 Steven Pritchard <steve@sicura.us> - 2.1.0
 - Add Debian 13 support
 - Drop support for Debian 11, which is end of life
