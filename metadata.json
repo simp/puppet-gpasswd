@@ -1,6 +1,6 @@
 {
   "name": "simp-gpasswd",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "author": "SIMP Team",
   "summary": "Adds support for :manages_members to the Linux group native type",
   "license": "Apache-2.0",
@@ -8,7 +8,9 @@
   "project_page": "https://github.com/simp/puppet-gpasswd",
   "issues_url": "https://github.com/simp/puppet-gpasswd/issues",
   "description": "The Linux group native type cannot manage local group membership. This remedies the situation by providing the :manages_members attribute and using gpasswd for group modification.",
-  "dependencies": [],
+  "dependencies": [
+
+  ],
   "operatingsystem_support": [
     {
       "operatingsystem": "CentOS",
@@ -67,7 +69,7 @@
   "requirements": [
     {
       "name": "openvox",
-      "version_requirement": ">= 8.0.0 < 9.0.0"
+      "version_requirement": ">= 8.0.0 < 10.0.0"
     }
   ]
 }

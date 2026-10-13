@@ -114,13 +114,11 @@ jobs:
             openfact_version: '~> 5.0'
             ruby_version: '3.2.11'  # renovate: datasource=ruby-version depName=ruby
             experimental: false
-          # OpenVox 9 release candidate; switch to '~> 9.0' and make blocking
-          # (experimental: false) once 9.0.0 is released.
-          - label: 'OpenVox 9.x RC (Ruby 4.0)'
-            puppet_version: '>= 9.0.0.pre.rc1'
-            openfact_version: '>= 5'
+          - label: 'OpenVox 9.x (Ruby 4.0)'
+            puppet_version: '~> 9.0'
+            openfact_version: '~> 6.0'
             ruby_version: '4.0.7'  # renovate: datasource=ruby-version depName=ruby
-            experimental: true
+            experimental: false
       fail-fast: false
     env:
       PUPPET_VERSION: ${{matrix.puppet.puppet_version}}
