@@ -127,6 +127,9 @@ Puppet::Type.type(:group).provide :gpasswd, parent: Puppet::Type::Group::Provide
     if @resource[:auth_membership]
       cmd << [ command(:modmember), '-M', to_be_added.join(','), @resource[:name] ].shelljoin
     else
+      # Without exclusive membership, an empty list means there is nothing to add
+      return if to_be_added.empty?
+
       to_be_added |= @current_members
 
       !to_be_added.empty? && cmd += to_be_added.map do |x|

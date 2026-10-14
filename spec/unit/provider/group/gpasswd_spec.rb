@@ -279,6 +279,23 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
       end
     end
 
+    describe 'when setting no members on an existing group without exclusive membership' do
+      let(:members) { [] }
+
+      it 'runs no gpasswd command' do
+        expect(Puppet::Etc).to receive(:getgrnam).with('mygroup').and_return(
+          Etc::Group.new('mygroup', 'x', '99999', ['old_one', 'old_two']),
+        ).at_least(:once)
+
+        resource[:auth_membership] = :false
+
+        expect(provider).not_to receive(:execute)
+
+        provider.members
+        provider.members = (resource.property('members').should)
+      end
+    end
+
     describe 'when emptying an existing group with exclusive membership' do
       let(:members) { [] }
 
