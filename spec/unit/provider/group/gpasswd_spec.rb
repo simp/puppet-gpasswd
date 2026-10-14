@@ -278,6 +278,47 @@ describe Puppet::Type.type(:group).provider(:gpasswd) do
         provider.members = (resource.property('members').should)
       end
     end
+
+    describe 'when emptying an existing group with exclusive membership' do
+      let(:members) { [] }
+
+      it 'removes all existing members' do
+        old_members = ['old_one', 'old_two']
+
+        allow(provider).to receive(:execute).with(
+          include('/bin/true'),
+          hash_including(
+            {
+              custom_environment: anything,
+              failonfail: true,
+              combine: true,
+            },
+          ),
+        )
+
+        expect(Puppet::Etc).to receive(:getgrnam).with('mygroup').and_return(
+          Etc::Group.new('mygroup', 'x', '99999', old_members),
+        ).at_least(:once)
+
+        resource[:auth_membership] = :true
+
+        expect(provider).to receive(:execute).with(
+          "/usr/bin/gpasswd -M '' mygroup",
+          hash_including(
+            {
+              custom_environment: anything,
+              failonfail: false,
+              combine: true,
+            },
+          ),
+        ).and_return(success_output)
+
+        provider.create
+
+        provider.members
+        provider.members = (resource.property('members').should)
+      end
+    end
   end
 
   describe '#gid=' do
