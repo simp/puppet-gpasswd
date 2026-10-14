@@ -105,10 +105,10 @@ Puppet::Type.type(:group).provide :gpasswd, parent: Puppet::Type::Group::Provide
         Puppet::Etc.send('getpwnam', user)
       end
 
-      Puppet.debug("Ignoring unknown user: '#{user}'")
-
       false
     rescue
+      Puppet.debug("Ignoring unknown user: '#{user}'")
+
       true
     end
 
@@ -124,10 +124,12 @@ Puppet::Type.type(:group).provide :gpasswd, parent: Puppet::Type::Group::Provide
                     to_set.dup
                   end
 
-    return if to_be_added.empty?
     if @resource[:auth_membership]
       cmd << [ command(:modmember), '-M', to_be_added.join(','), @resource[:name] ].shelljoin
     else
+      # Without exclusive membership, an empty list means there is nothing to add
+      return if to_be_added.empty?
+
       to_be_added |= @current_members
 
       !to_be_added.empty? && cmd += to_be_added.map do |x|

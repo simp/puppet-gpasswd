@@ -164,6 +164,62 @@ describe 'gpasswd' do
       end
     end
 
+    context 'when emptying a group' do
+      # split with -1 keeps the trailing empty member field, so an empty
+      # group yields [] instead of nil
+      def group_members(host, group)
+        on(host, "getent group #{group}").output.strip.split(':', -1)[3].split(',')
+      end
+
+      let(:group) { 'emptyme' }
+      let(:gid) { '2222' }
+
+      context 'with populated members' do
+        let(:users) { ['marvin', 'arthur'] }
+
+        it 'populates the group' do
+          apply_manifest_on(host, manifest, catch_failures: true)
+          expect(group_members(host, group)).to contain_exactly('marvin', 'arthur')
+        end
+      end
+
+      context 'with auth_membership => false and no members' do
+        let(:manifest) do
+          "group { '#{group}': members => [], gid => #{gid}, auth_membership => false }"
+        end
+
+        it 'works with no errors' do
+          apply_manifest_on(host, manifest, catch_failures: true)
+        end
+
+        it 'is idempotent' do
+          apply_manifest_on(host, manifest, catch_changes: true)
+        end
+
+        it 'leaves the existing members alone' do
+          expect(group_members(host, group)).to contain_exactly('marvin', 'arthur')
+        end
+      end
+
+      context 'with auth_membership => true and no members' do
+        let(:manifest) do
+          "group { '#{group}': members => [], gid => #{gid}, auth_membership => true }"
+        end
+
+        it 'works with no errors' do
+          apply_manifest_on(host, manifest, catch_failures: true)
+        end
+
+        it 'is idempotent' do
+          apply_manifest_on(host, manifest, catch_changes: true)
+        end
+
+        it 'has emptied the group' do
+          expect(group_members(host, group)).to be_empty
+        end
+      end
+    end
+
     context 'ensure that "puppet resource group" still functions' do
       it 'runs "puppet resource group" without issue' do
         on(host, 'puppet resource group')
