@@ -134,6 +134,32 @@ jobs:
       - run: 'bundle exec rake parallel_spec'
         continue-on-error: ${{matrix.puppet.experimental}}
 
+  # The one check for branch protection to require: GitHub only blocks a
+  # merge on checks listed by name, and this job fails unless every job it
+  # needs succeeded, so the required list never has to track job or matrix
+  # names. Add new jobs to `needs:`; puppetsync drops a job a repo doesn't
+  # have (e.g. acceptance) from the list.
+  all-checks:
+    name: 'All checks'
+    if: always()
+    needs:
+      - puppet-syntax
+      - puppet-style
+      - ruby-style
+      - file-checks
+      - reference
+      - releng-checks
+      - spec-tests
+      - acceptance
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Fail unless every needed job succeeded'
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          jq -r 'to_entries[] | "\(.key): \(.value.result)"' <<< "$NEEDS"
+          jq -e 'all(.[]; .result == "success")' <<< "$NEEDS" > /dev/null
+
   acceptance:
     runs-on:
       - ubuntu-latest
