@@ -25,7 +25,7 @@ jobs:
       - name: 'Install Ruby'
         uses: ruby/setup-ruby@v1  # ruby/setup-ruby@ec106b438a1ff6ff109590de34ddc62c540232e0
         with:
-          ruby-version: '4.0.7'
+          ruby-version: '4.0.9'
           bundler-cache: true
       - run: "bundle exec rake syntax"
 
@@ -37,7 +37,7 @@ jobs:
       - name: 'Install Ruby'
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '4.0.7'
+          ruby-version: '4.0.9'
           bundler-cache: true
       - run: "bundle exec rake lint"
       - run: "bundle exec rake metadata_lint"
@@ -50,7 +50,7 @@ jobs:
       - name: 'Install Ruby'
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '4.0.7'
+          ruby-version: '4.0.9'
           bundler-cache: true
       - run: |
           bundle show
@@ -64,7 +64,7 @@ jobs:
       - name: 'Install Ruby'
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '4.0.7'
+          ruby-version: '4.0.9'
           bundler-cache: true
       - run: bundle exec rake check:dot_underscore
       - run: bundle exec rake check:test_file
@@ -77,7 +77,7 @@ jobs:
       - name: 'Install Ruby'
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '4.0.7'
+          ruby-version: '4.0.9'
           bundler-cache: true
       - name: 'Check REFERENCE.md freshness'
         run: bundle exec rake validate:strings
@@ -90,7 +90,7 @@ jobs:
       - name: 'Install Ruby'
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '4.0.7'
+          ruby-version: '4.0.9'
           bundler-cache: true
       - name: 'Tags and changelogs'
         run: |
@@ -117,7 +117,7 @@ jobs:
           - label: 'OpenVox 9.x (Ruby 4.0)'
             puppet_version: '~> 9.0'
             openfact_version: '~> 6.0'
-            ruby_version: '4.0.7'  # renovate: datasource=ruby-version depName=ruby
+            ruby_version: '4.0.9'  # renovate: datasource=ruby-version depName=ruby
             experimental: false
       fail-fast: false
     env:
@@ -191,7 +191,7 @@ jobs:
       - name: setup ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.4.11
+          ruby-version: 3.4.12
       - name: bundle install
         run: |
           bundle install
